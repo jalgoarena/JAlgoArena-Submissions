@@ -1,0 +1,22 @@
+logging:
+  path: ./logs
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: ${EUREKA_URL:http://localhost:5000/eureka/}
+
+server:
+  port: 5003
+---
+spring:
+  profiles: heroku
+eureka:
+  instance:
+    hostname: ${APP_NAME}.herokuapp.com
+    nonSecurePort: 80
+
+logging:
+  level:
+    ROOT: INFO
+    org.springframework.web: INFO
