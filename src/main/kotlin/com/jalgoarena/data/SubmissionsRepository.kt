@@ -31,9 +31,13 @@ class SubmissionsRepository(dbName: String) {
     }
 
     fun find(id: String): Submission? {
-        return readonly {
-            val entityId = PersistentEntityId.toEntityId(id)
-            Submission.from(it.getEntity(entityId))
+        return try {
+            readonly {
+                val entityId = PersistentEntityId.toEntityId(id)
+                Submission.from(it.getEntity(entityId))
+            }
+        } catch(e: EntityRemovedInDatabaseException) {
+            null
         }
     }
 
@@ -67,13 +71,12 @@ class SubmissionsRepository(dbName: String) {
         return Submission.from(entity)
     }
 
-    fun delete(id: String): Submission {
+    fun delete(id: String) {
         val entityId = PersistentEntityId.toEntityId(id)
 
         return transactional {
             val entity = it.getEntity(entityId)
             entity.delete()
-            Submission.from(entity)
         }
     }
 
