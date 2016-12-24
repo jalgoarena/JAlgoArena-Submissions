@@ -44,7 +44,7 @@ class SubmissionsRepository(dbName: String) {
     fun addOrUpdate(submission: Submission): Submission {
         return transactional {
 
-            val existingEntity = it.find(Constants.entityType, Constants.userId, submission.userId).union(
+            val existingEntity = it.find(Constants.entityType, Constants.userId, submission.userId).intersect(
                     it.find(Constants.entityType, Constants.problemId, submission.problemId)
             ).firstOrNull()
 

@@ -60,7 +60,27 @@ class SubmissionsRepositorySpec {
         deletedSubmission.should.be.`null`
     }
 
-    private val user1SubmissionForFibInKotlin = dummySubmission("fib", "User#1", "kotlin")
-    private val user1SubmissionForFibInJava = dummySubmission("fib", "User#1", "java")
-    private val user2SubmissionForFibInKotlin = dummySubmission("fib", "User#2", "kotlin")
+    @Test
+    fun should_return_all_added_submissions() {
+        repository.addOrUpdate(user1SubmissionForFibInKotlin)
+        repository.addOrUpdate(user2SubmissionForFibInKotlin)
+
+        val allSubmissions = repository.findAll()
+        allSubmissions.should.have.size(2)
+    }
+
+    @Test
+    fun should_return_only_specific_to_user_submissions() {
+        repository.addOrUpdate(user1SubmissionForFibInKotlin)
+        repository.addOrUpdate(user2SubmissionForFibInKotlin)
+
+        val user1Submissions = repository.findAllByUserId(user1)
+        user1Submissions.should.have.size(1)
+    }
+
+    private val user1 = "User#1"
+    private val user2 = "User#2"
+    private val user1SubmissionForFibInKotlin = dummySubmission("fib", user1, "kotlin")
+    private val user1SubmissionForFibInJava = dummySubmission("fib", user1, "java")
+    private val user2SubmissionForFibInKotlin = dummySubmission("fib", user2, "kotlin")
 }
