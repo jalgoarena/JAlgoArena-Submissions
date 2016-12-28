@@ -12,10 +12,9 @@ class UsersClient {
     private val httpClient = OkHttpClient()
     private val objectMapper = jacksonObjectMapper()
 
-    fun findAllUsers(token: String): Array<User> {
+    fun findAllUsers(): Array<User> {
         val request = Request.Builder()
-            .url("https://jalgoarena-api.herokuapp.com/auth/api/users")
-            .addHeader("X-Authorization", token)
+            .url("https://jalgoarena-api.herokuapp.com/auth/users")
             .build()
 
         val response = httpClient.newCall(request).execute()
