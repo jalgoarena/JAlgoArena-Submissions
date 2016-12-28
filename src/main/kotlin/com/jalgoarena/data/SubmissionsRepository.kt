@@ -21,7 +21,7 @@ class SubmissionsRepository(dbName: String) {
         }
     }
 
-    fun findAllByUserId(userId: String): List<Submission> {
+    fun findByUserId(userId: String): List<Submission> {
         return readonly {
             it.find(
                     Constants.entityType,
@@ -31,7 +31,7 @@ class SubmissionsRepository(dbName: String) {
         }
     }
 
-    fun find(id: String): Submission? {
+    fun findById(id: String): Submission? {
         return try {
             readonly {
                 val entityId = PersistentEntityId.toEntityId(id)
@@ -39,6 +39,16 @@ class SubmissionsRepository(dbName: String) {
             }
         } catch(e: EntityRemovedInDatabaseException) {
             null
+        }
+    }
+
+    fun findByProblemId(problemId: String): List<Submission> {
+        return readonly {
+            it.find(
+                    Constants.entityType,
+                    Constants.problemId,
+                    problemId
+            ).map { Submission.from(it) }
         }
     }
 

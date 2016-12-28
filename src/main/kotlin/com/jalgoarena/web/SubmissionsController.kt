@@ -13,7 +13,7 @@ class SubmissionsController(@Inject val repository: SubmissionsRepository) {
     fun submissions(): List<Submission> = repository.findAll()
 
     @GetMapping("/submissions/{userId}", produces = arrayOf("application/json"))
-    fun submissions(@PathVariable userId: String) = repository.findAllByUserId(userId)
+    fun submissions(@PathVariable userId: String) = repository.findByUserId(userId)
 
     @PostMapping("/submissions", produces = arrayOf("application/json"))
     fun addOrUpdateSubmission(@RequestBody submission: Submission) = repository.addOrUpdate(submission)

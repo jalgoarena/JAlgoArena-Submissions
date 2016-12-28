@@ -47,7 +47,7 @@ class SubmissionsRepositorySpec {
         val submissionKotlin = repository.addOrUpdate(user1SubmissionForFibInKotlin)
         repository.addOrUpdate(user1SubmissionForFibInJava)
 
-        val submission = repository.find(submissionKotlin.id!!)
+        val submission = repository.findById(submissionKotlin.id!!)
         submission!!.language.should.equal("java")
     }
 
@@ -55,7 +55,7 @@ class SubmissionsRepositorySpec {
     fun should_delete_already_added_submission() {
         val submission = repository.addOrUpdate(user2SubmissionForFibInKotlin)
         repository.delete(submission.id!!)
-        val deletedSubmission = repository.find(submission.id!!)
+        val deletedSubmission = repository.findById(submission.id!!)
 
         deletedSubmission.should.be.`null`
     }
@@ -74,7 +74,7 @@ class SubmissionsRepositorySpec {
         repository.addOrUpdate(user1SubmissionForFibInKotlin)
         repository.addOrUpdate(user2SubmissionForFibInKotlin)
 
-        val user1Submissions = repository.findAllByUserId(user1)
+        val user1Submissions = repository.findByUserId(user1)
         user1Submissions.should.have.size(1)
     }
 
