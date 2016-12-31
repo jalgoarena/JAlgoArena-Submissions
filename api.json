@@ -1,0 +1,6 @@
+{
+  "name": "JAlgoArena Submissions Service",
+  "description": "JAlgoArena Submissions Service",
+  "website": "https://github.com/spolnik/jalgoarena-submissions",
+  "success_url": "/health"
+}

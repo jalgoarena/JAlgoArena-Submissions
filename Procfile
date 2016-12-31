@@ -1,1 +1,1 @@
-web: java $JAVA_OPTS -jar build/libs/jalgoarena-submissions-1.0.jar  --spring.profiles.active=heroku
+web: java -jar build/libs/jalgoarena-submissions-*.jar  --spring.profiles.active=heroku
