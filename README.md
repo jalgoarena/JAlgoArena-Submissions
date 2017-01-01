@@ -42,7 +42,7 @@ Demo: https://jalgoarena-ui.herokuapp.com/
 ## Running locally
 
 There are two ways to run it - from sources or from binaries.
-- Default port: `5002`
+- Default port: `5003`
 
 ### Running from binaries
 - go to [releases page](https://github.com/spolnik/JAlgoArena-Submissions/releases) and download last app package (JAlgoArena-Submissions-[version_number].zip)
@@ -51,7 +51,7 @@ There are two ways to run it - from sources or from binaries.
 
 ### Running from sources
 - run `git clone https://github.com/spolnik/JAlgoArena-Submissions` to clone locally the sources
-- now, you can build project with command `./gradlew clean bootRepackage` which will create runnable jar package with app sources. Next, run `java -Dserver.port=5002 -jar build/libs/jalgoarena-auth-*.jar` which will start application
+- now, you can build project with command `./gradlew clean bootRepackage` which will create runnable jar package with app sources. Next, run `java -Dserver.port=5003 -jar build/libs/jalgoarena-auth-*.jar` which will start application
 - there is second way to run app with gradle. Instead of running above, you can just run `./gradlew clean bootRun`
 
 ## Notes
