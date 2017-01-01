@@ -1,15 +1,17 @@
 package com.jalgoarena.web
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.jalgoarena.ApiGatewayConfiguration
 import com.jalgoarena.domain.User
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import org.springframework.stereotype.Service
+import javax.inject.Inject
 
 @Service
-class UsersClient {
+class UsersClient(@Inject val apiGatewayConfiguration: ApiGatewayConfiguration) {
 
-    private val API_URL = "https://jalgoarena-api.herokuapp.com/auth"
+    private fun authServiceUrl() = "${apiGatewayConfiguration.apiGatewayUrl}/auth"
 
     private val httpClient = OkHttpClient()
     private val objectMapper = jacksonObjectMapper()
@@ -17,7 +19,7 @@ class UsersClient {
     fun findAllUsers(): Array<User> {
 
         val request = Request.Builder()
-            .url("$API_URL/users")
+            .url("${authServiceUrl()}/users")
             .build()
 
         val response = httpClient.newCall(request).execute()
@@ -26,7 +28,7 @@ class UsersClient {
 
     fun findUser(token: String): User {
         val request = Request.Builder()
-                .url("$API_URL/api/user")
+                .url("${authServiceUrl()}/api/user")
                 .addHeader("X-Authorization", token)
                 .build()
 
