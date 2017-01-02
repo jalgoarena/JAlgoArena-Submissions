@@ -23,7 +23,7 @@ class RankingCalculator(@Inject val repository: SubmissionsRepository) {
                     user.region,
                     user.team
             )
-        }
+        }.sortedByDescending { it.score }
     }
 
     fun problemRanking(problemId: String, users: Array<User>): List<ProblemRankEntry> {
