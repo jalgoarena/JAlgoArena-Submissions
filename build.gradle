@@ -37,10 +37,10 @@ dependencies {
             'com.fasterxml.jackson.core:jackson-core',
             'com.fasterxml.jackson.core:jackson-annotations',
             "com.fasterxml.jackson.module:jackson-module-kotlin",
-            'com.squareup.okhttp3:okhttp:3.4.2',
             "org.springframework.boot:spring-boot-starter-web",
             "org.springframework.boot:spring-boot-starter-actuator",
             'org.springframework.cloud:spring-cloud-starter-eureka',
+            'org.springframework.cloud:spring-cloud-starter-feign',
             "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version",
             'org.jetbrains.xodus:xodus-openAPI:1.0.2',
             'org.jetbrains.xodus:xodus-entity-store:1.0.2'

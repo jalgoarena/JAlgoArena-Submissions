@@ -1,38 +1,18 @@
 package com.jalgoarena.web
 
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.jalgoarena.ApiGatewayConfiguration
 import com.jalgoarena.domain.User
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import org.springframework.stereotype.Service
-import javax.inject.Inject
+import feign.Headers
+import feign.Param
+import org.springframework.cloud.netflix.feign.FeignClient
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestMethod
 
-@Service
-class UsersClient(@Inject val apiGatewayConfiguration: ApiGatewayConfiguration) {
+@FeignClient("jalgoarena-auth")
+interface UsersClient {
+    @RequestMapping("/findAllUsers", method = arrayOf(RequestMethod.GET),  produces = arrayOf("application/json"))
+    fun findAllUsers(): List<User>
 
-    private fun authServiceUrl() = "${apiGatewayConfiguration.apiGatewayUrl}/auth"
-
-    private val httpClient = OkHttpClient()
-    private val objectMapper = jacksonObjectMapper()
-
-    fun findAllUsers(): Array<User> {
-
-        val request = Request.Builder()
-            .url("${authServiceUrl()}/users")
-            .build()
-
-        val response = httpClient.newCall(request).execute()
-        return objectMapper.readValue(response.body().string(), Array<User>::class.java)
-    }
-
-    fun findUser(token: String): User {
-        val request = Request.Builder()
-                .url("${authServiceUrl()}/api/user")
-                .addHeader("X-Authorization", token)
-                .build()
-
-        val response = httpClient.newCall(request).execute()
-        return objectMapper.readValue(response.body().string(), User::class.java)
-    }
+    @RequestMapping("/api/findUser", method = arrayOf(RequestMethod.GET), produces = arrayOf("application/json"))
+    @Headers("X-Authorization: {token}")
+    fun findUser(@Param("token") token: String): User
 }
