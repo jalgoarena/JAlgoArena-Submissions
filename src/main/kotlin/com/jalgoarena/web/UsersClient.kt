@@ -1,23 +1,38 @@
 package com.jalgoarena.web
 
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.jalgoarena.ApiGatewayConfiguration
 import com.jalgoarena.domain.User
-import org.springframework.cloud.netflix.feign.FeignClient
-import org.springframework.stereotype.Component
-import org.springframework.web.bind.annotation.RequestHeader
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestMethod
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import org.springframework.stereotype.Service
+import javax.inject.Inject
 
-@FeignClient("jalgoarena-auth", fallback = HystrixUsersClientFallback::class)
-interface UsersClient {
-    @RequestMapping("/users", method = arrayOf(RequestMethod.GET),  produces = arrayOf("application/json"))
-    fun users(): List<User>
+@Service
+class UsersClient(@Inject val apiGatewayConfiguration: ApiGatewayConfiguration) {
 
-    @RequestMapping("/api/user", method = arrayOf(RequestMethod.GET), produces = arrayOf("application/json"))
-    fun user(@RequestHeader("X-Authorization") token: String): User
-}
+    private fun authServiceUrl() = "${apiGatewayConfiguration.apiGatewayUrl}/auth"
 
-@Component
-open class HystrixUsersClientFallback : UsersClient {
-    override fun users(): List<User> = emptyList()
-    override fun user(token: String): User = User("", "", "", "", "")
+    private val httpClient = OkHttpClient()
+    private val objectMapper = jacksonObjectMapper()
+
+    fun findAllUsers(): Array<User> {
+
+        val request = Request.Builder()
+            .url("${authServiceUrl()}/users")
+            .build()
+
+        val response = httpClient.newCall(request).execute()
+        return objectMapper.readValue(response.body().string(), Array<User>::class.java)
+    }
+
+    fun findUser(token: String): User {
+        val request = Request.Builder()
+                .url("${authServiceUrl()}/api/user")
+                .addHeader("X-Authorization", token)
+                .build()
+
+        val response = httpClient.newCall(request).execute()
+        return objectMapper.readValue(response.body().string(), User::class.java)
+    }
 }

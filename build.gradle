@@ -37,17 +37,16 @@ dependencies {
             'com.fasterxml.jackson.core:jackson-core',
             'com.fasterxml.jackson.core:jackson-annotations',
             "com.fasterxml.jackson.module:jackson-module-kotlin",
+            'com.squareup.okhttp3:okhttp:3.4.2',
             "org.springframework.boot:spring-boot-starter-web",
             "org.springframework.boot:spring-boot-starter-actuator",
             'org.springframework.cloud:spring-cloud-starter-eureka',
-            'org.springframework.cloud:spring-cloud-starter-feign',
             "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version",
             'org.jetbrains.xodus:xodus-openAPI:1.0.2',
             'org.jetbrains.xodus:xodus-entity-store:1.0.2'
 
     runtime 'ch.qos.logback:logback-classic:1.1.7',
-            'ch.qos.logback:logback-core:1.1.7',
-            "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
+            'ch.qos.logback:logback-core:1.1.7'
 
     testCompile 'junit:junit:4.12',
             "com.winterbe:expekt:0.5.0"

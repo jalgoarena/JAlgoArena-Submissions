@@ -7,7 +7,7 @@ import javax.inject.Inject
 @Service
 class RankingCalculator(@Inject val repository: SubmissionsRepository) {
 
-    fun ranking(users: List<User>): List<RankEntry> {
+    fun ranking(users: Array<User>): List<RankEntry> {
         val submissions = repository.findAll()
 
         val bonusPoints = calculateBonusPointsForFastestSolutions(submissions, users)
@@ -26,7 +26,7 @@ class RankingCalculator(@Inject val repository: SubmissionsRepository) {
         }.sortedByDescending { it.score }
     }
 
-    fun problemRanking(problemId: String, users: List<User>): List<ProblemRankEntry> {
+    fun problemRanking(problemId: String, users: Array<User>): List<ProblemRankEntry> {
         val problemSubmissions = repository.findByProblemId(problemId)
 
         val bonusPoints = calculateBonusPointsForFastestSolutions(problemSubmissions, users)
@@ -57,7 +57,7 @@ class RankingCalculator(@Inject val repository: SubmissionsRepository) {
         }
     }
 
-    private fun calculateBonusPointsForFastestSolutions(submissions: List<Submission>, users: List<User>): Map<String, Double> {
+    private fun calculateBonusPointsForFastestSolutions(submissions: List<Submission>, users: Array<User>): Map<String, Double> {
 
         val bonusPoints = mutableMapOf<String, Double>()
         users.forEach { bonusPoints[it.id] = 0.0 }
