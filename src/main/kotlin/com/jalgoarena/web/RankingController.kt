@@ -15,9 +15,9 @@ class RankingController(
 ) {
 
     @GetMapping("/ranking", produces = arrayOf("application/json"))
-    fun ranking() = rankingCalculator.ranking(usersClient.findAllUsers())
+    fun ranking() = rankingCalculator.ranking(usersClient.users())
 
     @GetMapping("/ranking/{problemId}", produces = arrayOf("application/json"))
     fun problemRanking(@PathVariable problemId: String) =
-            rankingCalculator.problemRanking(problemId, usersClient.findAllUsers())
+            rankingCalculator.problemRanking(problemId, usersClient.users())
 }
