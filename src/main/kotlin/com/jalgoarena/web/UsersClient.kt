@@ -9,10 +9,10 @@ import org.springframework.web.bind.annotation.RequestMethod
 
 @FeignClient("jalgoarena-auth")
 interface UsersClient {
-    @RequestMapping("/findAllUsers", method = arrayOf(RequestMethod.GET),  produces = arrayOf("application/json"))
+    @RequestMapping("/users", method = arrayOf(RequestMethod.GET),  produces = arrayOf("application/json"))
     fun findAllUsers(): List<User>
 
-    @RequestMapping("/api/findUser", method = arrayOf(RequestMethod.GET), produces = arrayOf("application/json"))
+    @RequestMapping("/api/user", method = arrayOf(RequestMethod.GET), produces = arrayOf("application/json"))
     @Headers("X-Authorization: {token}")
     fun findUser(@Param("token") token: String): User
 }
