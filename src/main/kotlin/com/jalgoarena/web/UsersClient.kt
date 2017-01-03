@@ -6,7 +6,6 @@ import org.springframework.stereotype.Component
 import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestMethod
-import javax.ws.rs.WebApplicationException
 
 @FeignClient("jalgoarena-auth", fallback = HystrixUsersClientFallback::class)
 interface UsersClient {
@@ -19,6 +18,6 @@ interface UsersClient {
 
 @Component
 open class HystrixUsersClientFallback : UsersClient {
-    override fun users(): List<User> = throw WebApplicationException(500)
-    override fun user(token: String) = throw WebApplicationException(500)
+    override fun users(): List<User> = emptyList()
+    override fun user(token: String): User = User("", "", "", "", "")
 }
