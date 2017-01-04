@@ -1,7 +1,6 @@
 package com.jalgoarena.domain
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
-import com.fasterxml.jackson.annotation.JsonProperty
 import jetbrains.exodus.entitystore.Entity
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -13,7 +12,7 @@ data class Submission(
         val statusCode: String,
         val userId: String,
         val language: String,
-        @JsonProperty("_id") var id: String? = null) {
+        var id: String? = null) {
 
     companion object {
         fun from(entity: Entity): Submission {
