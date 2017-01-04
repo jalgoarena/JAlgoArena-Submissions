@@ -8,7 +8,7 @@ import jetbrains.exodus.entitystore.Entity
 data class Submission(
         val problemId: String,
         val level: Int,
-        @JsonProperty("elapsed_time") val elapsedTime: Double,
+        val elapsedTime: Double,
         val sourceCode: String,
         val statusCode: String,
         val userId: String,
