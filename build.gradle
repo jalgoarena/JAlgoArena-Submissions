@@ -50,7 +50,6 @@ dependencies {
 
     testCompile 'junit:junit:4.12',
             'pl.pragmatists:JUnitParams:1.0.5',
-            "com.winterbe:expekt:0.5.0",
             "org.springframework.boot:spring-boot-starter-test"
 }
 

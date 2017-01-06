@@ -60,6 +60,35 @@ class BonusPointsForBestTimeRankingCalculatorSpec {
         ))
     }
 
+    @Test
+    fun returns_empty_problem_ranking_when_no_submissions_for_problem() {
+        given(repository.findByProblemId("fib")).willReturn(emptyList())
+
+        val rankingCalculator = bonusPointsForBestTimeRankingCalculator(repository)
+
+        assertThat(rankingCalculator.problemRanking("fib", USERS))
+                .isEqualTo(emptyList<ProblemRankEntry>())
+    }
+
+    @Test
+    fun returns_problem_ranking_giving_1_additional_point_for_fastest_solution_sorted_by_times() {
+        given(repository.findByProblemId("fib")).willReturn(listOf(
+                submission("fib", 1, 0.01, USER_MIKOLAJ.id),
+                submission("fib", 1, 0.0001, USER_JULIA.id),
+                submission("fib", 1, 0.001, USER_JOE.id),
+                submission("fib", 1, 0.1, USER_TOM.id)
+        ))
+
+        val rankingCalculator = bonusPointsForBestTimeRankingCalculator(repository)
+
+        assertThat(rankingCalculator.problemRanking("fib", USERS)).isEqualTo(listOf(
+                ProblemRankEntry("julia", 11.0, 0.0001, "java"),
+                ProblemRankEntry("joe", 10.0, 0.001, "java"),
+                ProblemRankEntry("mikołaj", 10.0, 0.01, "java"),
+                ProblemRankEntry("tom", 10.0, 0.1, "java")
+        ))
+    }
+
     private fun bonusPointsForBestTimeRankingCalculator(repository: SubmissionsRepository) =
             BonusPointsForBestTimeRankingCalculator(repository, BasicRankingCalculator(repository, BasicScoreCalculator()))
 
