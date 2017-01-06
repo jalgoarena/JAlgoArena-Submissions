@@ -1,6 +1,7 @@
 package com.jalgoarena
 
 import com.jalgoarena.data.SubmissionsRepository
+import com.jalgoarena.data.XodusSubmissionsRepository
 import com.jalgoarena.domain.Submission
 import com.winterbe.expekt.should
 import jetbrains.exodus.entitystore.PersistentEntityStores
@@ -18,7 +19,7 @@ class SubmissionsRepositorySpec {
 
         init {
             PersistentEntityStores.newInstance(testDbName).close()
-            repository = SubmissionsRepository(testDbName)
+            repository = XodusSubmissionsRepository(testDbName)
         }
 
         @AfterClass
