@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service
 import javax.inject.Inject
 
 @Service
-class HttpUsersClient(@Inject val discoveryClient: EurekaClient) : UsersClient {
+class HttpUsersClient(@Inject private val discoveryClient: EurekaClient) : UsersClient {
 
     private fun authServiceUrl(): String {
         val instance = discoveryClient.getNextServerFromEureka("jalgoarena-auth", false)

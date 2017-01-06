@@ -8,6 +8,6 @@ interface SubmissionsRepository {
     fun findById(id: String): Submission?
     fun findByProblemId(problemId: String): List<Submission>
     fun addOrUpdate(submission: Submission): Submission
-    fun delete(id: String)
+    fun delete(id: String): Boolean
     fun destroy()
 }

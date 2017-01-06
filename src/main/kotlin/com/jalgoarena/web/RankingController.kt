@@ -10,8 +10,8 @@ import javax.inject.Inject
 @CrossOrigin
 @RestController
 class RankingController(
-        @Inject val rankingCalculator: RankingCalculator,
-        @Inject val usersClient: UsersClient
+        @Inject private val rankingCalculator: RankingCalculator,
+        @Inject private val usersClient: UsersClient
 ) {
 
     @GetMapping("/ranking", produces = arrayOf("application/json"))
