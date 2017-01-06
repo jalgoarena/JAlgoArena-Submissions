@@ -5,13 +5,10 @@ import com.jalgoarena.domain.ProblemRankEntry
 import com.jalgoarena.domain.RankEntry
 import com.jalgoarena.domain.Submission
 import com.jalgoarena.domain.User
-import org.springframework.stereotype.Service
-import javax.inject.Inject
 
-@Service
 class BasicRankingCalculator(
-        @Inject val repository: SubmissionsRepository,
-        val scoreCalculator: ScoreCalculator
+        private val repository: SubmissionsRepository,
+        private val scoreCalculator: ScoreCalculator
 ) : RankingCalculator {
 
     override fun ranking(users: Array<User>): List<RankEntry> {

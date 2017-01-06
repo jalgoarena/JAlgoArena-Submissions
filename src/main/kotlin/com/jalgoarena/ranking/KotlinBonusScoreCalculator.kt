@@ -2,7 +2,9 @@ package com.jalgoarena.ranking
 
 import com.jalgoarena.domain.Submission
 
-class KotlinBonusScoreCalculator(private val scoreCalculator: ScoreCalculator) : ScoreCalculator {
+class KotlinBonusScoreCalculator(
+        private val scoreCalculator: ScoreCalculator
+) : ScoreCalculator {
 
     override fun calculate(userSubmission: Submission) =
             scoreCalculator.calculate(userSubmission) * languageFactor(userSubmission)
