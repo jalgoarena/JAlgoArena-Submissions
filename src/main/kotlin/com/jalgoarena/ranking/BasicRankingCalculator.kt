@@ -1,11 +1,18 @@
-package com.jalgoarena.domain
+package com.jalgoarena.ranking
 
 import com.jalgoarena.data.SubmissionsRepository
+import com.jalgoarena.domain.ProblemRankEntry
+import com.jalgoarena.domain.RankEntry
+import com.jalgoarena.domain.Submission
+import com.jalgoarena.domain.User
 import org.springframework.stereotype.Service
 import javax.inject.Inject
 
 @Service
-class BasicRankingCalculator(@Inject val repository: SubmissionsRepository) : RankingCalculator {
+class BasicRankingCalculator(
+        @Inject val repository: SubmissionsRepository,
+        val scoreCalculator: ScoreCalculator
+) : RankingCalculator {
 
     override fun ranking(users: Array<User>): List<RankEntry> {
         val submissions = repository.findAll()
@@ -39,17 +46,8 @@ class BasicRankingCalculator(@Inject val repository: SubmissionsRepository) : Ra
         }.sortedBy { it.elapsedTime }
     }
 
-    private fun score(userSubmissions: List<Submission>): Double {
-        fun timeFactor(elapsedTime: Double) =
-                if (elapsedTime > 500) 1
-                else if (elapsedTime > 100) 3
-                else if (elapsedTime > 10) 5
-                else if (elapsedTime >= 1) 8
-                else 10
-
-        return userSubmissions.sumByDouble {
-            val languageFactor = if ("kotlin" == it.language) 1.5 else 1.0
-            it.level * timeFactor(it.elapsedTime) * languageFactor
-        }
+    fun score(userSubmissions: List<Submission>): Double {
+        return userSubmissions.sumByDouble {  scoreCalculator.calculate(it) }
     }
 }
+

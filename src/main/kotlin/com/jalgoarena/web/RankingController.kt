@@ -1,6 +1,6 @@
 package com.jalgoarena.web
 
-import com.jalgoarena.domain.RankingCalculator
+import com.jalgoarena.ranking.RankingCalculator
 import org.springframework.web.bind.annotation.CrossOrigin
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
