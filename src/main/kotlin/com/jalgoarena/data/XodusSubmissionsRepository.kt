@@ -5,7 +5,6 @@ import com.jalgoarena.domain.Submission
 import jetbrains.exodus.entitystore.*
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Repository
-import javax.annotation.PreDestroy
 
 @Repository
 class XodusSubmissionsRepository(dbName: String) : SubmissionsRepository {
@@ -91,7 +90,6 @@ class XodusSubmissionsRepository(dbName: String) : SubmissionsRepository {
         }
     }
 
-    @PreDestroy
     override fun destroy() {
         var proceed = true
         var count = 1

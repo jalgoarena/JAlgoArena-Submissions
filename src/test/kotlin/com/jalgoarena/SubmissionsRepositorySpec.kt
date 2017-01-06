@@ -27,6 +27,7 @@ class SubmissionsRepositorySpec {
         }
 
     }
+
     @Test
     fun adds_new_submission() {
         val submission = repository.addOrUpdate(user1SubmissionForFibInKotlin)
