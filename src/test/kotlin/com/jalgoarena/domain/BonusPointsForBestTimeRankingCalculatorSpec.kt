@@ -7,40 +7,19 @@ import org.junit.Test
 import org.mockito.BDDMockito.given
 import org.mockito.Mockito.mock
 
-class RankingCalculatorSpec {
+class BonusPointsForBestTimeRankingCalculatorSpec {
 
     private lateinit var repository: SubmissionsRepository
+    private lateinit var rankingCalculator: RankingCalculator
 
     @Before
     fun setUp() {
         repository = mock(SubmissionsRepository::class.java)
+        rankingCalculator = mock(RankingCalculator::class.java)
     }
 
     @Test
-    fun returns_empty_ranking_if_no_users() {
-        given(repository.findAll()).willReturn(emptyList())
-
-        val rankingCalculator = RankingCalculator(repository)
-
-        assertThat(rankingCalculator.ranking(emptyArray())).isEqualTo(emptyList<RankEntry>())
-    }
-
-    @Test
-    fun returns_all_users_with_0_score_if_no_submissions() {
-        given(repository.findAll()).willReturn(emptyList())
-
-        val rankingCalculator = RankingCalculator(repository)
-
-        assertThat(rankingCalculator.ranking(USERS)).isEqualTo(listOf(
-                RankEntry("mikołaj", 0.0, emptyList(), "Kraków", "Tyniec Team"),
-                RankEntry("julia", 0.0, emptyList(), "Kraków", "Tyniec Team"),
-                RankEntry("joe", 0.0, emptyList(), "London", "London Team"),
-                RankEntry("tom", 0.0, emptyList(), "London", "London Team")
-        ))
-    }
-
-    @Test
-    fun returns_users_in_descending_order_based_on_their_score() {
+    fun returns_users_in_descending_order_based_on_score_when_fastests_solution_per_problem_has_1_bonus_point_more() {
         given(repository.findAll()).willReturn(listOf(
                 javaSubmission("fib", 1, 0.01, USER_MIKOLAJ.id),
                 kotlinSubmission("fib", 1, 0.011, USER_JULIA.id),
@@ -50,7 +29,7 @@ class RankingCalculatorSpec {
                 kotlinSubmission("word-ladder", 3, 0.011, USER_JULIA.id)
         ))
 
-        val rankingCalculator = RankingCalculator(repository)
+        val rankingCalculator = bonusPointsForBestTimeRankingCalculator(repository)
 
         assertThat(rankingCalculator.ranking(USERS)).isEqualTo(listOf(
                 RankEntry("julia", 60.0, listOf("fib", "word-ladder"), "Kraków", "Tyniec Team"),
@@ -59,6 +38,26 @@ class RankingCalculatorSpec {
                 RankEntry("joe", 21.0, listOf("2-sum"), "London", "London Team")
         ))
     }
+
+    @Test
+    fun returns_1_additional_point_for_fastest_solution() {
+        given(repository.findAll()).willReturn(listOf(
+                kotlinSubmission("fib", 1, 0.01, USER_JULIA.id),
+                kotlinSubmission("fib", 1, 0.001, USER_JOE.id)
+        ))
+
+        val rankingCalculator = bonusPointsForBestTimeRankingCalculator(repository)
+
+        assertThat(rankingCalculator.ranking(USERS)).isEqualTo(listOf(
+                RankEntry("joe", 16.0, listOf("fib"), "London", "London Team"),
+                RankEntry("julia", 15.0, listOf("fib"), "Kraków", "Tyniec Team"),
+                RankEntry("mikołaj", 0.0, emptyList(), "Kraków", "Tyniec Team"),
+                RankEntry("tom", 0.0, emptyList(), "London", "London Team")
+        ))
+    }
+
+    private fun bonusPointsForBestTimeRankingCalculator(repository: SubmissionsRepository) =
+            BonusPointsForBestTimeRankingCalculator(repository, BasicRankingCalculator(repository))
 
     private fun javaSubmission(problemId: String, level: Int, elapsedTime: Double, userId: String) =
             Submission(problemId, level, elapsedTime, DUMMY_SOURCE_CODE, STATUS_ACCEPTED, userId, "java")
