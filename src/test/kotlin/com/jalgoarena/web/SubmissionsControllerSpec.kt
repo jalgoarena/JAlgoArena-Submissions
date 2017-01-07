@@ -20,7 +20,7 @@ import javax.inject.Inject
 
 @RunWith(SpringRunner::class)
 @WebMvcTest(SubmissionsController::class)
-class SubmissionsControllerTest {
+class SubmissionsControllerSpec {
 
     @Inject
     private lateinit var mockMvc: MockMvc
@@ -40,19 +40,27 @@ class SubmissionsControllerTest {
 
     @Test
     fun returns_401_if_user_is_not_admin() {
-        val dummyToken = "Bearer 123j12n31lkmdp012j21d"
-        given(usersClient.findUser(dummyToken)).willReturn(User("", "", "", "USER", ""))
+        given(usersClient.findUser(DUMMY_TOKEN)).willReturn(USER)
 
         mockMvc.perform(get("/submissions")
-                .header("X-Authorization", dummyToken)
+                .header("X-Authorization", DUMMY_TOKEN)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isUnauthorized)
     }
 
     @Test
-    fun returns_all_submissions_to_admin() {
-        val dummyToken = "Bearer 123j12n31lkmdp012j21d"
-        given(usersClient.findUser(dummyToken)).willReturn(User("", "", "", "ADMIN", ""))
+    fun returns_401_when_user_is_unidentified() {
+        given(usersClient.findUser(DUMMY_TOKEN)).willReturn(null)
+
+        mockMvc.perform(get("/submissions")
+                .header("X-Authorization", DUMMY_TOKEN)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isUnauthorized)
+    }
+
+    @Test
+    fun returns_200_and_all_submissions_to_admin() {
+        given(usersClient.findUser(DUMMY_TOKEN)).willReturn(ADMIN)
 
         given(submissionRepository.findAll()).willReturn(listOf(
             submission("mikołaj"),
@@ -61,11 +69,16 @@ class SubmissionsControllerTest {
         ))
 
         mockMvc.perform(get("/submissions")
-                .header("X-Authorization", dummyToken)
+                .header("X-Authorization", DUMMY_TOKEN)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk)
                 .andExpect(jsonPath("$", hasSize<ArrayNode>(3)))
     }
+
+    private val USER = User("", "", "", "USER", "")
+    private val ADMIN = User("", "", "", "ADMIN", "")
+
+    private val DUMMY_TOKEN = "Bearer 123j12n31lkmdp012j21d"
 
     private fun submission(userId: String) =
             Submission("fib", 1, 0.5, "class Solution", "ACCEPTED", userId, "java")

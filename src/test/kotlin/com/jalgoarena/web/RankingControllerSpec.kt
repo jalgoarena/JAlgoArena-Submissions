@@ -20,7 +20,7 @@ import javax.inject.Inject
 
 @RunWith(SpringRunner::class)
 @WebMvcTest(RankingController::class)
-class RankingControllerTest {
+class RankingControllerSpec {
 
     @Inject
     private lateinit var mockMvc: MockMvc
@@ -32,7 +32,7 @@ class RankingControllerTest {
     private lateinit var rankingCalculator: RankingCalculator
 
     @Test
-    fun returns_ranking() {
+    fun returns_200_and_ranking() {
         given(usersClient.findAllUsers()).willReturn(emptyArray())
 
         given(rankingCalculator.ranking(emptyArray())).willReturn(listOf(
@@ -49,7 +49,7 @@ class RankingControllerTest {
     }
 
     @Test
-    fun returns_problem_ranking() {
+    fun returns_200_and_problem_ranking() {
         given(usersClient.findAllUsers()).willReturn(emptyArray())
 
         given(rankingCalculator.problemRanking("fib", emptyArray())).willReturn(listOf(
