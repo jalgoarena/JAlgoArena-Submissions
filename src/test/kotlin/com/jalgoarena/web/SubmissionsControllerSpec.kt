@@ -33,14 +33,14 @@ class SubmissionsControllerSpec {
     private lateinit var submissionRepository: SubmissionsRepository
 
     @Test
-    fun returns_401_if_user_is_not_authorized_for_submissions_request() {
+    fun returns_401_if_user_is_not_authorized_for_get_submissions() {
         mockMvc.perform(get("/submissions")
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isUnauthorized)
     }
 
     @Test
-    fun returns_401_if_user_is_not_admin_for_submissions_request() {
+    fun returns_401_if_user_is_not_admin_for_get_submissions() {
         given(usersClient.findUser(DUMMY_TOKEN)).willReturn(USER)
 
         mockMvc.perform(get("/submissions")
@@ -50,7 +50,7 @@ class SubmissionsControllerSpec {
     }
 
     @Test
-    fun returns_401_when_user_is_unidentified_for_submissions_request() {
+    fun returns_401_when_user_is_unidentified_for_get_submissions() {
         given(usersClient.findUser(DUMMY_TOKEN)).willReturn(null)
 
         mockMvc.perform(get("/submissions")
@@ -60,7 +60,7 @@ class SubmissionsControllerSpec {
     }
 
     @Test
-    fun returns_200_and_all_submissions_to_admin_for_submissions_request() {
+    fun returns_200_and_all_submissions_to_admin_for_get_submissions() {
         given(usersClient.findUser(DUMMY_TOKEN)).willReturn(ADMIN)
 
         given(submissionRepository.findAll()).willReturn(listOf(
@@ -77,14 +77,14 @@ class SubmissionsControllerSpec {
     }
 
     @Test
-    fun returns_401_if_user_is_not_authorized_for_user_submissions_request() {
+    fun returns_401_if_user_is_not_authorized_get_submissions_for_user_id() {
         mockMvc.perform(get("/submissions/${USER.id}")
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isUnauthorized)
     }
 
     @Test
-    fun returns_401_if_user_is_the_same_as_submissions_owner_for_user_submissions_request() {
+    fun returns_401_if_user_is_the_same_as_submissions_owner_get_submissions_for_user_id() {
         given(usersClient.findUser(DUMMY_TOKEN)).willReturn(USER)
 
         mockMvc.perform(get("/submissions/differentuser")
@@ -94,7 +94,7 @@ class SubmissionsControllerSpec {
     }
 
     @Test
-    fun returns_401_when_user_is_unidentified_for_user_submissions_request() {
+    fun returns_401_when_user_is_unidentified_for_get_submissions_for_user_id() {
         given(usersClient.findUser(DUMMY_TOKEN)).willReturn(null)
 
         mockMvc.perform(get("/submissions/${USER.id}")
@@ -104,7 +104,7 @@ class SubmissionsControllerSpec {
     }
 
     @Test
-    fun returns_200_and_all_submissions_for_user_submissions_request() {
+    fun returns_200_and_all_submissions_for_get_submissions_for_user_id() {
         given(usersClient.findUser(DUMMY_TOKEN)).willReturn(USER)
 
         given(submissionRepository.findByUserId(USER.id)).willReturn(listOf(
@@ -119,7 +119,7 @@ class SubmissionsControllerSpec {
     }
 
     @Test
-    fun returns_401_if_user_is_not_authorized_for_adding_submission_post_request() {
+    fun returns_401_if_user_is_not_authorized_for_put_submissions() {
         mockMvc.perform(put("/submissions")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(submissionJson(USER.id)))
@@ -127,7 +127,7 @@ class SubmissionsControllerSpec {
     }
 
     @Test
-    fun returns_401_if_user_is_the_same_as_submission_owner_for_adding_submission_post_request() {
+    fun returns_401_if_user_is_the_same_as_submission_owner_for_put_submissions() {
         given(usersClient.findUser(DUMMY_TOKEN)).willReturn(USER)
 
         mockMvc.perform(put("/submissions")
@@ -138,7 +138,7 @@ class SubmissionsControllerSpec {
     }
 
     @Test
-    fun returns_401_when_user_is_unidentified_for_adding_submission_post_request() {
+    fun returns_401_when_user_is_unidentified_for_put_submissions() {
         given(usersClient.findUser(DUMMY_TOKEN)).willReturn(null)
 
         mockMvc.perform(put("/submissions")
@@ -149,8 +149,24 @@ class SubmissionsControllerSpec {
     }
 
     @Test
-    fun returns_200_and_all_submissions_for_adding_submission_post_request() {
+    fun returns_200_and_newly_added_submission_for_put_submissions() {
         given(usersClient.findUser(DUMMY_TOKEN)).willReturn(USER)
+
+        given(submissionRepository.addOrUpdate(submission(USER.id))).willReturn(
+                submission(USER.id, "0-1")
+        )
+
+        mockMvc.perform(put("/submissions")
+                .header("X-Authorization", DUMMY_TOKEN)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(submissionJson(USER.id)))
+                .andExpect(status().isCreated)
+                .andExpect(jsonPath("$.id", `is`("0-1")))
+    }
+
+    @Test
+    fun returns_200_and_re_added_submission_for_put_submissions_if_user_is_admin() {
+        given(usersClient.findUser(DUMMY_TOKEN)).willReturn(ADMIN)
 
         given(submissionRepository.addOrUpdate(submission(USER.id))).willReturn(
                 submission(USER.id, "0-1")

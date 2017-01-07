@@ -55,7 +55,7 @@ class SubmissionsController(
             @RequestHeader("X-Authorization", required = false) token: String?
     ) = checkUser(token) { user ->
         when {
-            user.id != submission.userId -> unauthorized()
+            ADMIN_ROLE != user.role && user.id != submission.userId -> unauthorized()
             else -> ResponseEntity(repository.addOrUpdate(submission), HttpStatus.CREATED)
         }
     }
