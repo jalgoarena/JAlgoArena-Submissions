@@ -32,14 +32,14 @@ class SubmissionsControllerSpec {
     private lateinit var submissionRepository: SubmissionsRepository
 
     @Test
-    fun returns_401_if_user_is_not_authorized() {
+    fun returns_401_if_user_is_not_authorized_for_submissions_request() {
         mockMvc.perform(get("/submissions")
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isUnauthorized)
     }
 
     @Test
-    fun returns_401_if_user_is_not_admin() {
+    fun returns_401_if_user_is_not_admin_for_submissions_request() {
         given(usersClient.findUser(DUMMY_TOKEN)).willReturn(USER)
 
         mockMvc.perform(get("/submissions")
@@ -49,7 +49,7 @@ class SubmissionsControllerSpec {
     }
 
     @Test
-    fun returns_401_when_user_is_unidentified() {
+    fun returns_401_when_user_is_unidentified_for_submissions_request() {
         given(usersClient.findUser(DUMMY_TOKEN)).willReturn(null)
 
         mockMvc.perform(get("/submissions")
@@ -59,7 +59,7 @@ class SubmissionsControllerSpec {
     }
 
     @Test
-    fun returns_200_and_all_submissions_to_admin() {
+    fun returns_200_and_all_submissions_to_admin_for_submissions_request() {
         given(usersClient.findUser(DUMMY_TOKEN)).willReturn(ADMIN)
 
         given(submissionRepository.findAll()).willReturn(listOf(
@@ -75,7 +75,49 @@ class SubmissionsControllerSpec {
                 .andExpect(jsonPath("$", hasSize<ArrayNode>(3)))
     }
 
-    private val USER = User("", "", "", "USER", "")
+    @Test
+    fun returns_401_if_user_is_not_authorized_for_user_submissions_request() {
+        mockMvc.perform(get("/submissions/${USER.id}")
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isUnauthorized)
+    }
+
+    @Test
+    fun returns_401_if_user_is_the_same_as_submissions_owner_for_user_submissions_request() {
+        given(usersClient.findUser(DUMMY_TOKEN)).willReturn(USER)
+
+        mockMvc.perform(get("/submissions/differentuser")
+                .header("X-Authorization", DUMMY_TOKEN)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isUnauthorized)
+    }
+
+    @Test
+    fun returns_401_when_user_is_unidentified_for_user_submissions_request() {
+        given(usersClient.findUser(DUMMY_TOKEN)).willReturn(null)
+
+        mockMvc.perform(get("/submissions/${USER.id}")
+                .header("X-Authorization", DUMMY_TOKEN)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isUnauthorized)
+    }
+
+    @Test
+    fun returns_200_and_all_submissions_for_user_submissions_request() {
+        given(usersClient.findUser(DUMMY_TOKEN)).willReturn(USER)
+
+        given(submissionRepository.findByUserId(USER.id)).willReturn(listOf(
+                submission("julia")
+        ))
+
+        mockMvc.perform(get("/submissions/${USER.id}")
+                .header("X-Authorization", DUMMY_TOKEN)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk)
+                .andExpect(jsonPath("$", hasSize<ArrayNode>(1)))
+    }
+
+    private val USER = User("julia", "Kraków", "Tyniec Team", "USER", "0-0")
     private val ADMIN = User("", "", "", "ADMIN", "")
 
     private val DUMMY_TOKEN = "Bearer 123j12n31lkmdp012j21d"
