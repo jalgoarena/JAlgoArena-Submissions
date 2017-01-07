@@ -56,7 +56,7 @@ class SubmissionsController(
     ) = checkUser(token) { user ->
         when {
             user.id != submission.userId -> unauthorized()
-            else -> ok(repository.addOrUpdate(submission))
+            else -> ResponseEntity(repository.addOrUpdate(submission), HttpStatus.CREATED)
         }
     }
 

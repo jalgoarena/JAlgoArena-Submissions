@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode
 import com.jalgoarena.data.SubmissionsRepository
 import com.jalgoarena.domain.Submission
 import com.jalgoarena.domain.User
+import org.hamcrest.Matchers.`is`
 import org.hamcrest.Matchers.hasSize
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -14,6 +15,7 @@ import org.springframework.http.MediaType
 import org.springframework.test.context.junit4.SpringRunner
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import javax.inject.Inject
@@ -107,7 +109,7 @@ class SubmissionsControllerSpec {
         given(usersClient.findUser(DUMMY_TOKEN)).willReturn(USER)
 
         given(submissionRepository.findByUserId(USER.id)).willReturn(listOf(
-                submission("julia")
+                submission(USER.id)
         ))
 
         mockMvc.perform(get("/submissions/${USER.id}")
@@ -117,11 +119,68 @@ class SubmissionsControllerSpec {
                 .andExpect(jsonPath("$", hasSize<ArrayNode>(1)))
     }
 
+    @Test
+    fun returns_401_if_user_is_not_authorized_for_adding_submission_post_request() {
+        mockMvc.perform(post("/submissions")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(submissionJson(USER.id)))
+                .andExpect(status().isUnauthorized)
+    }
+
+    @Test
+    fun returns_401_if_user_is_the_same_as_submission_owner_for_adding_submission_post_request() {
+        given(usersClient.findUser(DUMMY_TOKEN)).willReturn(USER)
+
+        mockMvc.perform(post("/submissions")
+                .header("X-Authorization", DUMMY_TOKEN)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(submissionJson("differentuserid")))
+                .andExpect(status().isUnauthorized)
+    }
+
+    @Test
+    fun returns_401_when_user_is_unidentified_for_adding_submission_post_request() {
+        given(usersClient.findUser(DUMMY_TOKEN)).willReturn(null)
+
+        mockMvc.perform(post("/submissions")
+                .header("X-Authorization", DUMMY_TOKEN)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(submissionJson(USER.id)))
+                .andExpect(status().isUnauthorized)
+    }
+
+    @Test
+    fun returns_200_and_all_submissions_for_adding_submission_post_request() {
+        given(usersClient.findUser(DUMMY_TOKEN)).willReturn(USER)
+
+        given(submissionRepository.addOrUpdate(submission(USER.id))).willReturn(
+                submission(USER.id, "0-1")
+        )
+
+        mockMvc.perform(post("/submissions")
+                .header("X-Authorization", DUMMY_TOKEN)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(submissionJson(USER.id)))
+                .andExpect(status().isCreated)
+                .andExpect(jsonPath("$.id", `is`("0-1")))
+    }
+
     private val USER = User("julia", "Kraków", "Tyniec Team", "USER", "0-0")
     private val ADMIN = User("", "", "", "ADMIN", "")
 
     private val DUMMY_TOKEN = "Bearer 123j12n31lkmdp012j21d"
 
-    private fun submission(userId: String) =
-            Submission("fib", 1, 0.5, "class Solution", "ACCEPTED", userId, "java")
+    private fun submission(userId: String, id: String? = null) =
+            Submission("fib", 1, 0.5, "class Solution", "ACCEPTED", userId, "java", id)
+
+    private fun submissionJson(userId: String) = """{
+  "problemId": "fib",
+  "level": 1,
+  "elapsedTime": 0.5,
+  "sourceCode": "class Solution",
+  "statusCode": "ACCEPTED",
+  "userId": "$userId",
+  "language": "java"
+}
+"""
 }
