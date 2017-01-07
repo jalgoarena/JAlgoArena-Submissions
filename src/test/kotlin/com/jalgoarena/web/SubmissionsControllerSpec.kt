@@ -14,8 +14,7 @@ import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.MediaType
 import org.springframework.test.context.junit4.SpringRunner
 import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import javax.inject.Inject
@@ -121,7 +120,7 @@ class SubmissionsControllerSpec {
 
     @Test
     fun returns_401_if_user_is_not_authorized_for_adding_submission_post_request() {
-        mockMvc.perform(post("/submissions")
+        mockMvc.perform(put("/submissions")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(submissionJson(USER.id)))
                 .andExpect(status().isUnauthorized)
@@ -131,7 +130,7 @@ class SubmissionsControllerSpec {
     fun returns_401_if_user_is_the_same_as_submission_owner_for_adding_submission_post_request() {
         given(usersClient.findUser(DUMMY_TOKEN)).willReturn(USER)
 
-        mockMvc.perform(post("/submissions")
+        mockMvc.perform(put("/submissions")
                 .header("X-Authorization", DUMMY_TOKEN)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(submissionJson("differentuserid")))
@@ -142,7 +141,7 @@ class SubmissionsControllerSpec {
     fun returns_401_when_user_is_unidentified_for_adding_submission_post_request() {
         given(usersClient.findUser(DUMMY_TOKEN)).willReturn(null)
 
-        mockMvc.perform(post("/submissions")
+        mockMvc.perform(put("/submissions")
                 .header("X-Authorization", DUMMY_TOKEN)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(submissionJson(USER.id)))
@@ -157,12 +156,51 @@ class SubmissionsControllerSpec {
                 submission(USER.id, "0-1")
         )
 
-        mockMvc.perform(post("/submissions")
+        mockMvc.perform(put("/submissions")
                 .header("X-Authorization", DUMMY_TOKEN)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(submissionJson(USER.id)))
                 .andExpect(status().isCreated)
                 .andExpect(jsonPath("$.id", `is`("0-1")))
+    }
+
+    @Test
+    fun returns_401_if_user_is_not_authorized_for_delete_submission_request() {
+        mockMvc.perform(delete("/submissions/0-0")
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isUnauthorized)
+    }
+
+    @Test
+    fun returns_401_if_user_is_not_admin_for_delete_submission_request() {
+        given(usersClient.findUser(DUMMY_TOKEN)).willReturn(USER)
+
+        mockMvc.perform(delete("/submissions/0-0")
+                .header("X-Authorization", DUMMY_TOKEN)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isUnauthorized)
+    }
+
+    @Test
+    fun returns_401_when_user_is_unidentified_for_delete_submission_request() {
+        given(usersClient.findUser(DUMMY_TOKEN)).willReturn(null)
+
+        mockMvc.perform(delete("/submissions/0-0")
+                .header("X-Authorization", DUMMY_TOKEN)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isUnauthorized)
+    }
+
+    @Test
+    fun returns_200_and_true_to_admin_for_successful_delete_submission_request() {
+        given(usersClient.findUser(DUMMY_TOKEN)).willReturn(ADMIN)
+        given(submissionRepository.delete("0-0")).willReturn(true)
+
+        mockMvc.perform(delete("/submissions/0-0")
+                .header("X-Authorization", DUMMY_TOKEN)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk)
+                .andExpect(jsonPath("$", `is`(true)))
     }
 
     private val USER = User("julia", "Kraków", "Tyniec Team", "USER", "0-0")

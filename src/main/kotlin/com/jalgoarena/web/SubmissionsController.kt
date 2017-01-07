@@ -27,7 +27,7 @@ class SubmissionsController(
         }
     }
 
-    @PostMapping("/submissions/delete/{submissionId}", produces = arrayOf("application/json"))
+    @DeleteMapping("/submissions/{submissionId}", produces = arrayOf("application/json"))
     fun deleteSubmission(
             @PathVariable submissionId: String,
             @RequestHeader("X-Authorization", required = false) token: String?
@@ -49,7 +49,7 @@ class SubmissionsController(
         }
     }
 
-    @PostMapping("/submissions", produces = arrayOf("application/json"))
+    @PutMapping("/submissions", produces = arrayOf("application/json"))
     fun addOrUpdateSubmission(
             @RequestBody submission: Submission,
             @RequestHeader("X-Authorization", required = false) token: String?
