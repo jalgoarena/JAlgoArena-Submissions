@@ -7,12 +7,14 @@ import com.jalgoarena.domain.Submission
 import com.jalgoarena.domain.User
 
 class BasicRankingCalculator(
-        private val repository: SubmissionsRepository,
-        private val scoreCalculator: ScoreCalculator
-) : RankingCalculator {
+        repository: SubmissionsRepository,
+        scoreCalculator: ScoreCalculator
+) : RankingCalculator,
+        ScoreCalculator by scoreCalculator,
+        SubmissionsRepository by repository {
 
     override fun ranking(users: Array<User>): List<RankEntry> {
-        val submissions = repository.findAll()
+        val submissions = findAll()
 
         return users.map { user ->
             val userSubmissions = submissions.filter { it.userId == user.id }
@@ -29,7 +31,7 @@ class BasicRankingCalculator(
     }
 
     override fun problemRanking(problemId: String, users: Array<User>): List<ProblemRankEntry> {
-        val problemSubmissions = repository.findByProblemId(problemId)
+        val problemSubmissions = findByProblemId(problemId)
 
         return problemSubmissions.map { submission ->
             val user = users.filter { it.id == submission.userId }.first()
@@ -44,7 +46,7 @@ class BasicRankingCalculator(
     }
 
     fun score(userSubmissions: List<Submission>): Double {
-        return userSubmissions.sumByDouble {  scoreCalculator.calculate(it) }
+        return userSubmissions.sumByDouble {  calculate(it) }
     }
 }
 

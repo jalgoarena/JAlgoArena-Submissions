@@ -5,12 +5,9 @@ import com.jalgoarena.domain.ProblemRankEntry
 import com.jalgoarena.domain.RankEntry
 import com.jalgoarena.domain.Submission
 import com.jalgoarena.domain.User
-import org.springframework.stereotype.Service
-import javax.inject.Inject
 
-@Service
 class BonusPointsForBestTimeRankingCalculator(
-        @Inject val repository: SubmissionsRepository,
+        val repository: SubmissionsRepository,
         val rankingCalculator: RankingCalculator
 ) : RankingCalculator {
 
