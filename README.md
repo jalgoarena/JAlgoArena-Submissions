@@ -1,4 +1,4 @@
-# JAlgoArena Submissions [![Build Status](https://travis-ci.org/spolnik/JAlgoArena-Submissions.svg?branch=master)](https://travis-ci.org/spolnik/JAlgoArena-Submissions) [![codecov](https://codecov.io/gh/spolnik/JAlgoArena-Submissions/branch/master/graph/badge.svg)](https://codecov.io/gh/spolnik/JAlgoArena-Submissions)
+# JAlgoArena Submissions [![Build Status](https://travis-ci.org/spolnik/JAlgoArena-Submissions.svg?branch=master)](https://travis-ci.org/spolnik/JAlgoArena-Submissions) [![codecov](https://codecov.io/gh/spolnik/JAlgoArena-Submissions/branch/master/graph/badge.svg)](https://codecov.io/gh/spolnik/JAlgoArena-Submissions) [![GitHub release](https://img.shields.io/github/release/spolnik/jalgoarena-submissions.svg)]()
 
 JAlgoArena Submissions is service dedicated for collecting users submissions and exposing that data together with calculating ranking for all submissions as well as for problem based rankings. Quering submissions and submitting it has to be secure operation - methods require passing token which is then checked with Auth service.
 
