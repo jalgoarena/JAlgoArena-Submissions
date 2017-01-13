@@ -51,6 +51,18 @@ class HttpUsersClientSpec {
         assertThat(user).isNull()
     }
 
+    @Test
+    fun returns_all_users() {
+        givenDiscoveryService()
+
+        given(restTemplate.getForObject("$USERS_SERVICE_DUMMY_URL/users", Array<User>::class.java))
+                .willReturn(arrayOf(USER))
+
+        val users = usersClient.findAllUsers()
+
+        assertThat(users).hasSize(1)
+    }
+
     private fun givenDiscoveryService() {
         val instanceInfo = mock(InstanceInfo::class.java)
 
