@@ -4,6 +4,8 @@ import com.jalgoarena.data.SubmissionsRepository
 import com.jalgoarena.ranking.*
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.web.client.RestOperations
+import org.springframework.web.client.RestTemplate
 
 @Configuration
 open class AppConfiguration {
@@ -17,4 +19,7 @@ open class AppConfiguration {
                 submissionsRepository, rankingCalculator
         )
     }
+
+    @Bean
+    open fun restTemplate(): RestOperations = RestTemplate()
 }

@@ -1,7 +1,5 @@
-package com.jalgoarena
+package com.jalgoarena.data
 
-import com.jalgoarena.data.SubmissionsRepository
-import com.jalgoarena.data.XodusSubmissionsRepository
 import com.jalgoarena.domain.Submission
 import jetbrains.exodus.entitystore.PersistentEntityStores
 import org.assertj.core.api.Assertions.assertThat
