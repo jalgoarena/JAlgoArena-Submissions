@@ -7,8 +7,8 @@ import com.jalgoarena.domain.Submission
 import com.jalgoarena.domain.User
 
 class BonusPointsForBestTimeRankingCalculator(
-        val repository: SubmissionsRepository,
-        val rankingCalculator: RankingCalculator
+        private val repository: SubmissionsRepository,
+        private val rankingCalculator: RankingCalculator
 ) : RankingCalculator {
 
     override fun ranking(users: Array<User>): List<RankEntry> {
