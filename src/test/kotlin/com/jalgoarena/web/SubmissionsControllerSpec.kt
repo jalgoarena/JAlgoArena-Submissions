@@ -4,8 +4,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode
 import com.jalgoarena.data.SubmissionsRepository
 import com.jalgoarena.domain.Submission
 import com.jalgoarena.domain.User
-import org.hamcrest.Matchers.`is`
-import org.hamcrest.Matchers.hasSize
+import org.hamcrest.Matchers.*
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.BDDMockito.given
@@ -210,13 +209,13 @@ class SubmissionsControllerSpec {
     @Test
     fun returns_200_and_true_to_admin_for_successful_delete_submission_request() {
         given(usersClient.findUser(DUMMY_TOKEN)).willReturn(ADMIN)
-        given(submissionRepository.delete("0-0")).willReturn(true)
+        given(submissionRepository.delete("0-0")).willReturn(emptyList())
 
         mockMvc.perform(delete("/submissions/0-0")
                 .header("X-Authorization", DUMMY_TOKEN)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk)
-                .andExpect(jsonPath("$", `is`(true)))
+                .andExpect(jsonPath("$", hasSize<ArrayNode>(0)))
     }
 
     private val USER = User("julia", "Kraków", "Tyniec Team", "USER", "0-0")

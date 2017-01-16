@@ -81,13 +81,15 @@ class XodusSubmissionsRepository(dbName: String) : SubmissionsRepository {
         return Submission.from(entity)
     }
 
-    override fun delete(id: String): Boolean {
+    override fun delete(id: String): List<Submission> {
         val entityId = PersistentEntityId.toEntityId(id)
 
-        return transactional {
+        transactional {
             val entity = it.getEntity(entityId)
             entity.delete()
         }
+
+        return findAll()
     }
 
     override fun destroy() {
