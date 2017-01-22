@@ -4,7 +4,8 @@ import com.fasterxml.jackson.databind.node.ArrayNode
 import com.jalgoarena.data.SubmissionsRepository
 import com.jalgoarena.domain.Submission
 import com.jalgoarena.domain.User
-import org.hamcrest.Matchers.*
+import org.hamcrest.Matchers.`is`
+import org.hamcrest.Matchers.hasSize
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.BDDMockito.given
@@ -30,6 +31,24 @@ class SubmissionsControllerSpec {
 
     @MockBean
     private lateinit var submissionRepository: SubmissionsRepository
+
+    @Test
+    fun returns_200_and_submissions_solved_ratio_list() {
+        given(submissionRepository.findAll()).willReturn(listOf(
+                submissionForProblem("fib", "user1"),
+                submissionForProblem("fib", "user2"),
+                submissionForProblem("fib", "user3"),
+                submissionForProblem("2-sum", "user1"),
+                submissionForProblem("2-sum", "user2")
+        ))
+
+        mockMvc.perform(get("/submissions/solved-ratio")
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk)
+                .andExpect(jsonPath("$", hasSize<ArrayNode>(2)))
+                .andExpect(jsonPath("$[0].problemId", `is`("fib")))
+                .andExpect(jsonPath("$[0].solutionsCount", `is`(3)))
+    }
 
     @Test
     fun returns_401_if_user_is_not_authorized_for_get_submissions() {
@@ -224,7 +243,10 @@ class SubmissionsControllerSpec {
     private val DUMMY_TOKEN = "Bearer 123j12n31lkmdp012j21d"
 
     private fun submission(userId: String, id: String? = null) =
-            Submission("fib", 1, 0.5, "class Solution", "ACCEPTED", userId, "java", id)
+            submissionForProblem("fib", userId, id)
+
+    private fun submissionForProblem(problemId: String, userId: String, id: String? = null) =
+            Submission(problemId, 1, 0.5, "class Solution", "ACCEPTED", userId, "java", id)
 
     private fun submissionJson(userId: String) = """{
   "problemId": "fib",

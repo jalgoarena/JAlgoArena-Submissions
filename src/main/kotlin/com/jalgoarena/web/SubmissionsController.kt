@@ -3,6 +3,7 @@ package com.jalgoarena.web
 import com.jalgoarena.data.SubmissionsRepository
 import com.jalgoarena.domain.Submission
 import com.jalgoarena.domain.User
+import com.jalgoarena.ranking.SolvedRatioCalculator
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.http.ResponseEntity.ok
@@ -13,7 +14,7 @@ import javax.inject.Inject
 @RestController
 class SubmissionsController(
         @Inject private val repository: SubmissionsRepository,
-        @Inject private val usersClient: UsersClient) {
+        @Inject private val usersClient: UsersClient): SolvedRatioCalculator {
 
     private val ADMIN_ROLE = "ADMIN"
 
@@ -26,6 +27,9 @@ class SubmissionsController(
             else -> ok(repository.findAll())
         }
     }
+
+    @GetMapping("/submissions/solved-ratio", produces = arrayOf("application/json"))
+    fun submissionsSolvedRatio() = calculateSubmissionsSolvedRatioAndReturnIt(repository)
 
     @DeleteMapping("/submissions/{submissionId}", produces = arrayOf("application/json"))
     fun deleteSubmission(
