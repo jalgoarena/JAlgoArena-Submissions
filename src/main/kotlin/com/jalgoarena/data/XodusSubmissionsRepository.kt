@@ -70,7 +70,6 @@ class XodusSubmissionsRepository(dbName: String) : SubmissionsRepository {
     private fun updateEntity(entity: Entity, submission: Submission): Submission {
         entity.apply {
             setProperty(Constants.problemId, submission.problemId)
-            setProperty(Constants.level, submission.level)
             setProperty(Constants.elapsedTime, submission.elapsedTime)
             setProperty(Constants.sourceCode, submission.sourceCode)
             setProperty(Constants.statusCode, submission.statusCode)

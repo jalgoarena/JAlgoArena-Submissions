@@ -1,16 +1,21 @@
 package com.jalgoarena.ranking
 
+import com.jalgoarena.data.ProblemsRepository
+import com.jalgoarena.domain.Problem
 import com.jalgoarena.domain.Submission
 import junitparams.JUnitParamsRunner
 import junitparams.Parameters
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.BDDMockito.given
+import org.mockito.Mockito.mock
 
 @RunWith(JUnitParamsRunner::class)
 class BasicScoreCalculatorSpec {
 
-    private val calculator = BasicScoreCalculator()
+    private val problemsRepository = mock(ProblemsRepository::class.java)
+    private val calculator = BasicScoreCalculator(problemsRepository)
 
     @Test
     @Parameters(
@@ -26,8 +31,11 @@ class BasicScoreCalculatorSpec {
             "9999.99, 1.0"
     )
     fun return_score_based_on_elapsed_time(elapsedTime: Double, expectedScore: Double) {
+        given(problemsRepository.findAll()).willReturn(arrayOf(
+                Problem("fib", 1)
+        ))
+
         val submission = submission(
-                level = 1,
                 elapsedTime = elapsedTime
         )
 
@@ -42,8 +50,11 @@ class BasicScoreCalculatorSpec {
             "3, 30.0"
     )
     fun return_score_based_on_level(level: Int, expectedScore: Double) {
+        given(problemsRepository.findAll()).willReturn(arrayOf(
+                Problem("fib", level)
+        ))
+
         val submission = submission(
-                level = level,
                 elapsedTime = 0.1
         )
 
@@ -51,8 +62,8 @@ class BasicScoreCalculatorSpec {
         assertThat(result).isEqualTo(expectedScore)
     }
 
-    private fun submission(level: Int, elapsedTime: Double) =
-            Submission("fib", level, elapsedTime, DUMMY_SOURCE_CODE, STATUS_ACCEPTED, "0-0", "java")
+    private fun submission(elapsedTime: Double) =
+            Submission("fib", elapsedTime, DUMMY_SOURCE_CODE, STATUS_ACCEPTED, "0-0", "java")
 
     private val DUMMY_SOURCE_CODE = "dummy source code"
     private val STATUS_ACCEPTED = "ACCEPTED"

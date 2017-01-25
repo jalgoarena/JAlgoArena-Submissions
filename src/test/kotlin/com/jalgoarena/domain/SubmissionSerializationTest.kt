@@ -31,7 +31,6 @@ class SubmissionSerializationTest {
 
     private val SUBMISSION = Submission(
             problemId = "fib",
-            level = 1,
             elapsedTime = 435.212,
             sourceCode = "dummy source code",
             statusCode = "ACCEPTED",
@@ -43,7 +42,6 @@ class SubmissionSerializationTest {
     @Language("JSON")
     private val  SUBMISSION_JSON = """{
   "problemId": "fib",
-  "level": 1,
   "elapsedTime": 435.212,
   "sourceCode": "dummy source code",
   "statusCode": "ACCEPTED",

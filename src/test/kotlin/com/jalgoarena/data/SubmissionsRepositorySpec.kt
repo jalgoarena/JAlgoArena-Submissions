@@ -101,7 +101,7 @@ class SubmissionsRepositorySpec {
     }
 
     private fun submission(problemId: String, userId: String, language: String) =
-            Submission(problemId, 1, 0.5, "class Solution", "ACCEPTED", userId, language)
+            Submission(problemId, 0.5, "class Solution", "ACCEPTED", userId, language)
 
     private val user1 = "User#1"
     private val user2 = "User#2"

@@ -1,5 +1,6 @@
 package com.jalgoarena.domain
 
+import com.jalgoarena.data.ProblemsRepository
 import com.jalgoarena.data.SubmissionsRepository
 import com.jalgoarena.ranking.BasicRankingCalculator
 import com.jalgoarena.ranking.BasicScoreCalculator
@@ -11,27 +12,29 @@ import org.mockito.Mockito.mock
 
 class BasicRankingCalculatorSpec {
 
-    private lateinit var repository: SubmissionsRepository
+    private lateinit var submissionsRepository: SubmissionsRepository
+    private lateinit var problemsRepository: ProblemsRepository
 
     @Before
     fun setUp() {
-        repository = mock(SubmissionsRepository::class.java)
+        submissionsRepository = mock(SubmissionsRepository::class.java)
+        problemsRepository = mock(ProblemsRepository::class.java)
     }
 
     @Test
     fun returns_empty_ranking_if_no_users() {
-        given(repository.findAll()).willReturn(emptyList())
+        given(submissionsRepository.findAll()).willReturn(emptyList())
 
-        val rankingCalculator = basicRankingCalculator(repository)
+        val rankingCalculator = basicRankingCalculator(submissionsRepository)
 
         assertThat(rankingCalculator.ranking(emptyArray())).isEqualTo(emptyList<RankEntry>())
     }
 
     @Test
     fun returns_all_users_with_0_score_if_no_submissions() {
-        given(repository.findAll()).willReturn(emptyList())
+        given(submissionsRepository.findAll()).willReturn(emptyList())
 
-        val rankingCalculator = basicRankingCalculator(repository)
+        val rankingCalculator = basicRankingCalculator(submissionsRepository)
 
         assertThat(rankingCalculator.ranking(USERS)).isEqualTo(listOf(
                 RankEntry("mikołaj", 0.0, emptyList(), "Kraków", "Tyniec Team"),
@@ -43,16 +46,22 @@ class BasicRankingCalculatorSpec {
 
     @Test
     fun returns_users_in_descending_order_based_on_their_score_and_if_user_equal_follwing_creation_of_user_order() {
-        given(repository.findAll()).willReturn(listOf(
-                submission("fib", 1, 0.01, USER_MIKOLAJ.id),
-                submission("fib", 1, 0.011, USER_JULIA.id),
-                submission("2-sum", 2, 0.01, USER_JOE.id),
-                submission("2-sum", 2, 0.011, USER_TOM.id),
-                submission("word-ladder", 3, 0.01, USER_MIKOLAJ.id),
-                submission("word-ladder", 3, 0.011, USER_JULIA.id)
+        given(problemsRepository.findAll()).willReturn(arrayOf(
+                Problem("fib", 1),
+                Problem("2-sum", 2),
+                Problem("word-ladder", 3)
         ))
 
-        val rankingCalculator = basicRankingCalculator(repository)
+        given(submissionsRepository.findAll()).willReturn(listOf(
+                submission("fib", 0.01, USER_MIKOLAJ.id),
+                submission("fib", 0.011, USER_JULIA.id),
+                submission("2-sum", 0.01, USER_JOE.id),
+                submission("2-sum", 0.011, USER_TOM.id),
+                submission("word-ladder", 0.01, USER_MIKOLAJ.id),
+                submission("word-ladder", 0.011, USER_JULIA.id)
+        ))
+
+        val rankingCalculator = basicRankingCalculator(submissionsRepository)
 
         assertThat(rankingCalculator.ranking(USERS)).isEqualTo(listOf(
                 RankEntry("mikołaj", 40.0, listOf("fib", "word-ladder"), "Kraków", "Tyniec Team"),
@@ -64,9 +73,9 @@ class BasicRankingCalculatorSpec {
 
     @Test
     fun returns_empty_problem_ranking_when_no_submissions_for_problem() {
-        given(repository.findByProblemId("fib")).willReturn(emptyList())
+        given(submissionsRepository.findByProblemId("fib")).willReturn(emptyList())
 
-        val rankingCalculator = basicRankingCalculator(repository)
+        val rankingCalculator = basicRankingCalculator(submissionsRepository)
 
         assertThat(rankingCalculator.problemRanking("fib", USERS))
                 .isEqualTo(emptyList<ProblemRankEntry>())
@@ -74,14 +83,18 @@ class BasicRankingCalculatorSpec {
 
     @Test
     fun returns_problem_ranking_sorted_by_times() {
-        given(repository.findByProblemId("fib")).willReturn(listOf(
-                submission("fib", 1, 0.01, USER_MIKOLAJ.id),
-                submission("fib", 1, 0.0001, USER_JULIA.id),
-                submission("fib", 1, 0.001, USER_JOE.id),
-                submission("fib", 1, 0.1, USER_TOM.id)
+        given(problemsRepository.findAll()).willReturn(arrayOf(
+                Problem("fib", 1)
         ))
 
-        val rankingCalculator = basicRankingCalculator(repository)
+        given(submissionsRepository.findByProblemId("fib")).willReturn(listOf(
+                submission("fib", 0.01, USER_MIKOLAJ.id),
+                submission("fib", 0.0001, USER_JULIA.id),
+                submission("fib", 0.001, USER_JOE.id),
+                submission("fib", 0.1, USER_TOM.id)
+        ))
+
+        val rankingCalculator = basicRankingCalculator(submissionsRepository)
 
         assertThat(rankingCalculator.problemRanking("fib", USERS)).isEqualTo(listOf(
                 ProblemRankEntry("julia", 10.0, 0.0001, "java"),
@@ -92,10 +105,10 @@ class BasicRankingCalculatorSpec {
     }
 
     private fun basicRankingCalculator(repository: SubmissionsRepository) =
-            BasicRankingCalculator(repository, BasicScoreCalculator())
+            BasicRankingCalculator(repository, BasicScoreCalculator(problemsRepository))
 
-    private fun submission(problemId: String, level: Int, elapsedTime: Double, userId: String) =
-            Submission(problemId, level, elapsedTime, DUMMY_SOURCE_CODE, STATUS_ACCEPTED, userId, "java")
+    private fun submission(problemId: String, elapsedTime: Double, userId: String) =
+            Submission(problemId, elapsedTime, DUMMY_SOURCE_CODE, STATUS_ACCEPTED, userId, "java")
 
     private val USER_MIKOLAJ = User("mikołaj", "Kraków", "Tyniec Team", "USER", "0-0")
     private val USER_JULIA = User("julia", "Kraków", "Tyniec Team", "USER", "0-1")

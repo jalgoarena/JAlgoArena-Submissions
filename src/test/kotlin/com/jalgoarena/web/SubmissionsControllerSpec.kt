@@ -246,7 +246,7 @@ class SubmissionsControllerSpec {
             submissionForProblem("fib", userId, id)
 
     private fun submissionForProblem(problemId: String, userId: String, id: String? = null) =
-            Submission(problemId, 1, 0.5, "class Solution", "ACCEPTED", userId, "java", id)
+            Submission(problemId, 0.5, "class Solution", "ACCEPTED", userId, "java", id)
 
     private fun submissionJson(userId: String) = """{
   "problemId": "fib",

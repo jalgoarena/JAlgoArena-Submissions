@@ -41,5 +41,5 @@ class KotlinBonusScoreCalculatorSpec {
     }
 
     private fun submission(language: String) =
-            Submission("fib", 1, 0.1, "DUMMY", "ACCEPTED", "0-0", language)
+            Submission("fib", 0.1, "DUMMY", "ACCEPTED", "0-0", language)
 }

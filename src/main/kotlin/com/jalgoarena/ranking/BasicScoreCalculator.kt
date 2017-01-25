@@ -1,10 +1,16 @@
 package com.jalgoarena.ranking
 
+import com.jalgoarena.data.ProblemsRepository
 import com.jalgoarena.domain.Submission
 
-class BasicScoreCalculator : ScoreCalculator {
-    override fun calculate(userSubmission: Submission) =
-            userSubmission.level * timeFactor(userSubmission.elapsedTime)
+class BasicScoreCalculator(
+        private val problemsRepository: ProblemsRepository
+) : ScoreCalculator {
+    override fun calculate(userSubmission: Submission): Double {
+        val (id, level) = problemsRepository.findAll().first { it.id == userSubmission.problemId }
+
+        return level * timeFactor(userSubmission.elapsedTime)
+    }
 
     private fun timeFactor(elapsedTime: Double) =
             if (elapsedTime >= 500) 1.0
