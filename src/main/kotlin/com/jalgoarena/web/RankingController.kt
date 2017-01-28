@@ -1,13 +1,11 @@
 package com.jalgoarena.web
 
 import com.jalgoarena.ranking.RankingCalculator
-import org.springframework.web.bind.annotation.CrossOrigin
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RestController
 import javax.inject.Inject
 
-@CrossOrigin
 @RestController
 class RankingController(
         @Inject private val rankingCalculator: RankingCalculator,

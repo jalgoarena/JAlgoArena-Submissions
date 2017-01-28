@@ -10,7 +10,6 @@ import org.springframework.http.ResponseEntity.ok
 import org.springframework.web.bind.annotation.*
 import javax.inject.Inject
 
-@CrossOrigin
 @RestController
 class SubmissionsController(
         @Inject private val repository: SubmissionsRepository,
