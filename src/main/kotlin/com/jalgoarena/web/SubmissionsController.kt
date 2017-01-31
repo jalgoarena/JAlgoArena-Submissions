@@ -28,7 +28,7 @@ class SubmissionsController(
     }
 
     @GetMapping("/submissions/solved-ratio", produces = arrayOf("application/json"))
-    fun submissionsSolvedRatio() = calculateSubmissionsSolvedRatioAndReturnIt(repository)
+    fun submissionsSolvedRatio() = calculateSubmissionsSolvedRatioAndReturnIt(repository.findAll())
 
     @DeleteMapping("/submissions/{submissionId}", produces = arrayOf("application/json"))
     fun deleteSubmission(

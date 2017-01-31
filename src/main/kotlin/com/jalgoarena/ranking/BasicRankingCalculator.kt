@@ -1,20 +1,16 @@
 package com.jalgoarena.ranking
 
 import com.jalgoarena.data.SubmissionsRepository
-import com.jalgoarena.domain.ProblemRankEntry
-import com.jalgoarena.domain.RankEntry
-import com.jalgoarena.domain.Submission
-import com.jalgoarena.domain.User
+import com.jalgoarena.domain.*
 
 class BasicRankingCalculator(
-        repository: SubmissionsRepository,
+        submissionsRepository: SubmissionsRepository,
         scoreCalculator: ScoreCalculator
 ) : RankingCalculator,
         ScoreCalculator by scoreCalculator,
-        SubmissionsRepository by repository {
+        SubmissionsRepository by submissionsRepository {
 
-    override fun ranking(users: Array<User>): List<RankEntry> {
-        val submissions = findAll()
+    override fun ranking(users: List<User>, submissions: List<Submission>, problems: List<Problem>): List<RankEntry> {
 
         return users.map { user ->
             val userSubmissions = submissions.filter { it.userId == user.id }
@@ -22,7 +18,7 @@ class BasicRankingCalculator(
 
             RankEntry(
                     user.username,
-                    score(userSubmissions),
+                    score(userSubmissions, problems),
                     solvedProblems,
                     user.region,
                     user.team
@@ -30,7 +26,7 @@ class BasicRankingCalculator(
         }.sortedByDescending { it.score }
     }
 
-    override fun problemRanking(problemId: String, users: Array<User>): List<ProblemRankEntry> {
+    override fun problemRanking(problemId: String, users: List<User>, problems: List<Problem>): List<ProblemRankEntry> {
         val problemSubmissions = findByProblemId(problemId)
 
         return problemSubmissions.map { submission ->
@@ -38,15 +34,15 @@ class BasicRankingCalculator(
 
             ProblemRankEntry(
                     user.username,
-                    score(listOf(submission)),
+                    score(listOf(submission), problems),
                     submission.elapsedTime,
                     submission.language
             )
         }.sortedBy { it.elapsedTime }
     }
 
-    fun score(userSubmissions: List<Submission>): Double {
-        return userSubmissions.sumByDouble {  calculate(it) }
+    private fun score(userSubmissions: List<Submission>, problems: List<Problem>): Double {
+        return userSubmissions.sumByDouble {  calculate(it, problems) }
     }
 }
 

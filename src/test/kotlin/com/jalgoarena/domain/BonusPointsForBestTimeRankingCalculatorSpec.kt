@@ -27,7 +27,7 @@ class BonusPointsForBestTimeRankingCalculatorSpec {
 
     @Test
     fun returns_users_in_descending_order_based_on_score_when_fastest_solution_per_problem_has_1_bonus_point_more() {
-        given(problemsRepository.findAll()).willReturn(arrayOf(
+        given(problemsRepository.findAll()).willReturn(listOf(
                 Problem("fib", 1),
                 Problem("2-sum", 2),
                 Problem("word-ladder", 3)
@@ -44,7 +44,7 @@ class BonusPointsForBestTimeRankingCalculatorSpec {
 
         val rankingCalculator = bonusPointsForBestTimeRankingCalculator(submissionsRepository)
 
-        assertThat(rankingCalculator.ranking(USERS)).isEqualTo(listOf(
+        assertThat(rankingCalculator.ranking(USERS, submissionsRepository.findAll(), problemsRepository.findAll())).isEqualTo(listOf(
                 RankEntry("mikołaj", 42.0, listOf("fib", "word-ladder"), "Kraków", "Tyniec Team"),
                 RankEntry("julia", 40.0, listOf("fib", "word-ladder"), "Kraków", "Tyniec Team"),
                 RankEntry("joe", 21.0, listOf("2-sum"), "London", "London Team"),
@@ -54,7 +54,7 @@ class BonusPointsForBestTimeRankingCalculatorSpec {
 
     @Test
     fun returns_1_additional_point_for_fastest_solution() {
-        given(problemsRepository.findAll()).willReturn(arrayOf(
+        given(problemsRepository.findAll()).willReturn(listOf(
                 Problem("fib", 1)
         ))
 
@@ -65,7 +65,7 @@ class BonusPointsForBestTimeRankingCalculatorSpec {
 
         val rankingCalculator = bonusPointsForBestTimeRankingCalculator(submissionsRepository)
 
-        assertThat(rankingCalculator.ranking(USERS)).isEqualTo(listOf(
+        assertThat(rankingCalculator.ranking(USERS, submissionsRepository.findAll(), problemsRepository.findAll())).isEqualTo(listOf(
                 RankEntry("joe", 11.0, listOf("fib"), "London", "London Team"),
                 RankEntry("julia", 10.0, listOf("fib"), "Kraków", "Tyniec Team"),
                 RankEntry("mikołaj", 0.0, emptyList(), "Kraków", "Tyniec Team"),
@@ -79,13 +79,13 @@ class BonusPointsForBestTimeRankingCalculatorSpec {
 
         val rankingCalculator = bonusPointsForBestTimeRankingCalculator(submissionsRepository)
 
-        assertThat(rankingCalculator.problemRanking("fib", USERS))
+        assertThat(rankingCalculator.problemRanking("fib", USERS, problemsRepository.findAll()))
                 .isEqualTo(emptyList<ProblemRankEntry>())
     }
 
     @Test
     fun returns_problem_ranking_giving_1_additional_point_for_fastest_solution_sorted_by_times() {
-        given(problemsRepository.findAll()).willReturn(arrayOf(
+        given(problemsRepository.findAll()).willReturn(listOf(
                 Problem("fib", 1)
         ))
 
@@ -98,7 +98,7 @@ class BonusPointsForBestTimeRankingCalculatorSpec {
 
         val rankingCalculator = bonusPointsForBestTimeRankingCalculator(submissionsRepository)
 
-        assertThat(rankingCalculator.problemRanking("fib", USERS)).isEqualTo(listOf(
+        assertThat(rankingCalculator.problemRanking("fib", USERS, problemsRepository.findAll())).isEqualTo(listOf(
                 ProblemRankEntry("julia", 11.0, 0.0001, "java"),
                 ProblemRankEntry("joe", 10.0, 0.001, "java"),
                 ProblemRankEntry("mikołaj", 10.0, 0.01, "java"),
@@ -109,7 +109,7 @@ class BonusPointsForBestTimeRankingCalculatorSpec {
     private fun bonusPointsForBestTimeRankingCalculator(repository: SubmissionsRepository) =
             BonusPointsForBestTimeRankingCalculator(
                     repository,
-                    BasicRankingCalculator(repository, BasicScoreCalculator(problemsRepository))
+                    BasicRankingCalculator(repository, BasicScoreCalculator())
             )
 
     private fun submission(problemId: String, elapsedTime: Double, userId: String) =
@@ -120,7 +120,7 @@ class BonusPointsForBestTimeRankingCalculatorSpec {
     private val USER_JOE = User("joe", "London", "London Team", "USER", "0-2")
     private val USER_TOM = User("tom", "London", "London Team", "USER", "0-3")
 
-    private val USERS = arrayOf(USER_MIKOLAJ, USER_JULIA, USER_JOE, USER_TOM)
+    private val USERS = listOf(USER_MIKOLAJ, USER_JULIA, USER_JOE, USER_TOM)
 
     private val DUMMY_SOURCE_CODE = "dummy source code"
     private val STATUS_ACCEPTED = "ACCEPTED"

@@ -27,7 +27,7 @@ class BasicRankingCalculatorSpec {
 
         val rankingCalculator = basicRankingCalculator(submissionsRepository)
 
-        assertThat(rankingCalculator.ranking(emptyArray())).isEqualTo(emptyList<RankEntry>())
+        assertThat(rankingCalculator.ranking(emptyList(), submissionsRepository.findAll(), problemsRepository.findAll())).isEqualTo(emptyList<RankEntry>())
     }
 
     @Test
@@ -36,7 +36,7 @@ class BasicRankingCalculatorSpec {
 
         val rankingCalculator = basicRankingCalculator(submissionsRepository)
 
-        assertThat(rankingCalculator.ranking(USERS)).isEqualTo(listOf(
+        assertThat(rankingCalculator.ranking(USERS, submissionsRepository.findAll(), problemsRepository.findAll())).isEqualTo(listOf(
                 RankEntry("mikołaj", 0.0, emptyList(), "Kraków", "Tyniec Team"),
                 RankEntry("julia", 0.0, emptyList(), "Kraków", "Tyniec Team"),
                 RankEntry("joe", 0.0, emptyList(), "London", "London Team"),
@@ -45,8 +45,8 @@ class BasicRankingCalculatorSpec {
     }
 
     @Test
-    fun returns_users_in_descending_order_based_on_their_score_and_if_user_equal_follwing_creation_of_user_order() {
-        given(problemsRepository.findAll()).willReturn(arrayOf(
+    fun returns_users_in_descending_order_based_on_their_score_and_if_user_equal_following_creation_of_user_order() {
+        given(problemsRepository.findAll()).willReturn(listOf(
                 Problem("fib", 1),
                 Problem("2-sum", 2),
                 Problem("word-ladder", 3)
@@ -63,7 +63,7 @@ class BasicRankingCalculatorSpec {
 
         val rankingCalculator = basicRankingCalculator(submissionsRepository)
 
-        assertThat(rankingCalculator.ranking(USERS)).isEqualTo(listOf(
+        assertThat(rankingCalculator.ranking(USERS, submissionsRepository.findAll(), problemsRepository.findAll())).isEqualTo(listOf(
                 RankEntry("mikołaj", 40.0, listOf("fib", "word-ladder"), "Kraków", "Tyniec Team"),
                 RankEntry("julia", 40.0, listOf("fib", "word-ladder"), "Kraków", "Tyniec Team"),
                 RankEntry("joe", 20.0, listOf("2-sum"), "London", "London Team"),
@@ -77,13 +77,13 @@ class BasicRankingCalculatorSpec {
 
         val rankingCalculator = basicRankingCalculator(submissionsRepository)
 
-        assertThat(rankingCalculator.problemRanking("fib", USERS))
+        assertThat(rankingCalculator.problemRanking("fib", USERS, problemsRepository.findAll()))
                 .isEqualTo(emptyList<ProblemRankEntry>())
     }
 
     @Test
     fun returns_problem_ranking_sorted_by_times() {
-        given(problemsRepository.findAll()).willReturn(arrayOf(
+        given(problemsRepository.findAll()).willReturn(listOf(
                 Problem("fib", 1)
         ))
 
@@ -96,7 +96,7 @@ class BasicRankingCalculatorSpec {
 
         val rankingCalculator = basicRankingCalculator(submissionsRepository)
 
-        assertThat(rankingCalculator.problemRanking("fib", USERS)).isEqualTo(listOf(
+        assertThat(rankingCalculator.problemRanking("fib", USERS, problemsRepository.findAll())).isEqualTo(listOf(
                 ProblemRankEntry("julia", 10.0, 0.0001, "java"),
                 ProblemRankEntry("joe", 10.0, 0.001, "java"),
                 ProblemRankEntry("mikołaj", 10.0, 0.01, "java"),
@@ -105,7 +105,7 @@ class BasicRankingCalculatorSpec {
     }
 
     private fun basicRankingCalculator(repository: SubmissionsRepository) =
-            BasicRankingCalculator(repository, BasicScoreCalculator(problemsRepository))
+            BasicRankingCalculator(repository, BasicScoreCalculator())
 
     private fun submission(problemId: String, elapsedTime: Double, userId: String) =
             Submission(problemId, elapsedTime, DUMMY_SOURCE_CODE, STATUS_ACCEPTED, userId, "java")
@@ -115,7 +115,7 @@ class BasicRankingCalculatorSpec {
     private val USER_JOE = User("joe", "London", "London Team", "USER", "0-2")
     private val USER_TOM = User("tom", "London", "London Team", "USER", "0-3")
 
-    private val USERS = arrayOf(USER_MIKOLAJ, USER_JULIA, USER_JOE, USER_TOM)
+    private val USERS = listOf(USER_MIKOLAJ, USER_JULIA, USER_JOE, USER_TOM)
 
     private val DUMMY_SOURCE_CODE = "dummy source code"
     private val STATUS_ACCEPTED = "ACCEPTED"

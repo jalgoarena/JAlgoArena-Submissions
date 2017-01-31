@@ -18,7 +18,7 @@ open class ProblemsClient(
             discoveryClient.getNextServerFromEureka("jalgoarena-problems", false).homePageUrl
 
     @Cacheable("problems")
-    override fun findAll(): Array<Problem> = restTemplate.getForObject(
+    override fun findAll(): List<Problem> = restTemplate.getForObject(
             "${problemsServiceUrl()}/problems", Array<Problem>::class.java
-    )
+    ).asList()
 }

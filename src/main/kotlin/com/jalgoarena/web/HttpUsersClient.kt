@@ -22,9 +22,9 @@ class HttpUsersClient(
             discoveryClient.getNextServerFromEureka("jalgoarena-auth", false).homePageUrl
 
 
-    override fun findAllUsers() = handleExceptions(returnOnException = emptyArray()) {
+    override fun findAllUsers() = handleExceptions(returnOnException = emptyList()) {
         restTemplate.getForObject(
-                "${authServiceUrl()}/users", Array<User>::class.java)!!
+                "${authServiceUrl()}/users", Array<User>::class.java)!!.asList()
     }
 
     override fun findUser(token: String) = handleExceptions(returnOnException = null) {

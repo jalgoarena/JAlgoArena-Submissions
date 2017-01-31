@@ -1,10 +1,8 @@
 package com.jalgoarena.ranking
 
-import com.jalgoarena.domain.ProblemRankEntry
-import com.jalgoarena.domain.RankEntry
-import com.jalgoarena.domain.User
+import com.jalgoarena.domain.*
 
 interface RankingCalculator {
-    fun ranking(users: Array<User>): List<RankEntry>
-    fun problemRanking(problemId: String, users: Array<User>): List<ProblemRankEntry>
+    fun ranking(users: List<User>, submissions: List<Submission>, problems: List<Problem>): List<RankEntry>
+    fun problemRanking(problemId: String, users: List<User>, problems: List<Problem>): List<ProblemRankEntry>
 }

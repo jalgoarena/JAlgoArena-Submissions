@@ -3,5 +3,5 @@ package com.jalgoarena.data
 import com.jalgoarena.domain.Problem
 
 interface ProblemsRepository {
-    fun findAll(): Array<Problem>
+    fun findAll(): List<Problem>
 }

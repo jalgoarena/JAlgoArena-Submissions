@@ -15,7 +15,7 @@ import org.mockito.Mockito.mock
 class BasicScoreCalculatorSpec {
 
     private val problemsRepository = mock(ProblemsRepository::class.java)
-    private val calculator = BasicScoreCalculator(problemsRepository)
+    private val calculator = BasicScoreCalculator()
 
     @Test
     @Parameters(
@@ -31,7 +31,7 @@ class BasicScoreCalculatorSpec {
             "9999.99, 1.0"
     )
     fun return_score_based_on_elapsed_time(elapsedTime: Double, expectedScore: Double) {
-        given(problemsRepository.findAll()).willReturn(arrayOf(
+        given(problemsRepository.findAll()).willReturn(listOf(
                 Problem("fib", 1)
         ))
 
@@ -39,7 +39,7 @@ class BasicScoreCalculatorSpec {
                 elapsedTime = elapsedTime
         )
 
-        val result = calculator.calculate(submission)
+        val result = calculator.calculate(submission, problemsRepository.findAll())
         assertThat(result).isEqualTo(expectedScore)
     }
 
@@ -50,7 +50,7 @@ class BasicScoreCalculatorSpec {
             "3, 30.0"
     )
     fun return_score_based_on_level(level: Int, expectedScore: Double) {
-        given(problemsRepository.findAll()).willReturn(arrayOf(
+        given(problemsRepository.findAll()).willReturn(listOf(
                 Problem("fib", level)
         ))
 
@@ -58,7 +58,7 @@ class BasicScoreCalculatorSpec {
                 elapsedTime = 0.1
         )
 
-        val result = calculator.calculate(submission)
+        val result = calculator.calculate(submission, problemsRepository.findAll())
         assertThat(result).isEqualTo(expectedScore)
     }
 

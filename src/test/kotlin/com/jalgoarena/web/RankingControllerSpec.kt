@@ -1,6 +1,8 @@
 package com.jalgoarena.web
 
 import com.fasterxml.jackson.databind.node.ArrayNode
+import com.jalgoarena.data.ProblemsRepository
+import com.jalgoarena.data.SubmissionsRepository
 import com.jalgoarena.domain.ProblemRankEntry
 import com.jalgoarena.domain.RankEntry
 import com.jalgoarena.ranking.RankingCalculator
@@ -31,11 +33,19 @@ class RankingControllerSpec {
     @MockBean
     private lateinit var rankingCalculator: RankingCalculator
 
+    @MockBean
+    private lateinit var problemsRepository: ProblemsRepository
+
+    @MockBean
+    private lateinit var submissionsRepository: SubmissionsRepository
+
     @Test
     fun returns_200_and_ranking() {
-        given(usersClient.findAllUsers()).willReturn(emptyArray())
+        given(usersClient.findAllUsers()).willReturn(emptyList())
+        given(submissionsRepository.findAll()).willReturn(emptyList())
+        given(problemsRepository.findAll()).willReturn(emptyList())
 
-        given(rankingCalculator.ranking(emptyArray())).willReturn(listOf(
+        given(rankingCalculator.ranking(emptyList(), emptyList(), emptyList())).willReturn(listOf(
                 RankEntry("mikołaj", 40.0, listOf("fib", "word-ladder"), "Kraków", "Tyniec Team"),
                 RankEntry("julia", 40.0, listOf("fib", "word-ladder"), "Kraków", "Tyniec Team"),
                 RankEntry("joe", 20.0, listOf("2-sum"), "London", "London Team"),
@@ -50,9 +60,10 @@ class RankingControllerSpec {
 
     @Test
     fun returns_200_and_problem_ranking() {
-        given(usersClient.findAllUsers()).willReturn(emptyArray())
+        given(usersClient.findAllUsers()).willReturn(emptyList())
+        given(problemsRepository.findAll()).willReturn(emptyList())
 
-        given(rankingCalculator.problemRanking("fib", emptyArray())).willReturn(listOf(
+        given(rankingCalculator.problemRanking("fib", emptyList(), emptyList())).willReturn(listOf(
                 ProblemRankEntry("julia", 10.0, 0.0001, "java"),
                 ProblemRankEntry("joe", 10.0, 0.001, "java"),
                 ProblemRankEntry("mikołaj", 10.0, 0.01, "java")
