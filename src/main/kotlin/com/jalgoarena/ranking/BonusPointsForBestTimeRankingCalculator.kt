@@ -7,6 +7,33 @@ class BonusPointsForBestTimeRankingCalculator(
         private val submissionsRepository: SubmissionsRepository,
         private val rankingCalculator: RankingCalculator
 ) : RankingCalculator {
+    override fun userRankingDetails(
+            user: User,
+            problems: List<Problem>,
+            users: List<User>
+    ): List<SubmissionWithRankingDetails> {
+
+        val userRankingDetails = rankingCalculator.userRankingDetails(
+                user,
+                problems,
+                users
+        )
+
+        return userRankingDetails.map { submissionWithRankingDetails ->
+
+            val bonusPoint = if (submissionWithRankingDetails.problemRankPlace == 1) 1.0 else 0.0
+            val scoreWithBonus = submissionWithRankingDetails.score + bonusPoint
+
+            val (problemRankPlace) = problemRanking(submissionWithRankingDetails.problemId, users, problems)
+                    .mapIndexed { i, problemRankEntry -> Pair(i, problemRankEntry) }
+                    .first { it.second.hacker == user.username }
+
+            submissionWithRankingDetails.copy(
+                    score = scoreWithBonus,
+                    problemRankPlace = problemRankPlace + 1
+            )
+        }
+    }
 
     override fun ranking(users: List<User>, submissions: List<Submission>, problems: List<Problem>): List<RankEntry> {
 

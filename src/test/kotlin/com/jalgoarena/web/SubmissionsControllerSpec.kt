@@ -1,9 +1,12 @@
 package com.jalgoarena.web
 
 import com.fasterxml.jackson.databind.node.ArrayNode
+import com.jalgoarena.data.ProblemsRepository
 import com.jalgoarena.data.SubmissionsRepository
 import com.jalgoarena.domain.Submission
+import com.jalgoarena.domain.SubmissionWithRankingDetails
 import com.jalgoarena.domain.User
+import com.jalgoarena.ranking.RankingCalculator
 import org.hamcrest.Matchers.`is`
 import org.hamcrest.Matchers.hasSize
 import org.junit.Test
@@ -31,6 +34,12 @@ class SubmissionsControllerSpec {
 
     @MockBean
     private lateinit var submissionRepository: SubmissionsRepository
+
+    @MockBean
+    private lateinit var problemsRepository: ProblemsRepository
+
+    @MockBean
+    private lateinit var rankingCalculator: RankingCalculator
 
     @Test
     fun returns_200_and_submissions_solved_ratio_list() {
@@ -124,9 +133,15 @@ class SubmissionsControllerSpec {
     @Test
     fun returns_200_and_all_submissions_for_get_submissions_for_user_id() {
         given(usersClient.findUser(DUMMY_TOKEN)).willReturn(USER)
+        given(usersClient.findAllUsers()).willReturn(emptyList())
 
-        given(submissionRepository.findByUserId(USER.id)).willReturn(listOf(
-                submission(USER.id)
+        val userSubmissions = listOf(submission(USER.id, "0-0"))
+        given(submissionRepository.findByUserId(USER.id)).willReturn(userSubmissions)
+
+        given(problemsRepository.findAll()).willReturn(emptyList())
+
+        given(rankingCalculator.userRankingDetails(USER, emptyList(), emptyList())).willReturn(listOf(
+                SubmissionWithRankingDetails.from(userSubmissions[0], 2, 15.0, 2)
         ))
 
         mockMvc.perform(get("/submissions/${USER.id}")

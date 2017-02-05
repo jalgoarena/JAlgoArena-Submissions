@@ -1,6 +1,5 @@
 package com.jalgoarena.ranking
 
-import com.jalgoarena.data.ProblemsRepository
 import com.jalgoarena.domain.Problem
 import com.jalgoarena.domain.Submission
 import junitparams.JUnitParamsRunner
@@ -8,13 +7,10 @@ import junitparams.Parameters
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.BDDMockito.given
-import org.mockito.Mockito.mock
 
 @RunWith(JUnitParamsRunner::class)
 class BasicScoreCalculatorSpec {
 
-    private val problemsRepository = mock(ProblemsRepository::class.java)
     private val calculator = BasicScoreCalculator()
 
     @Test
@@ -31,15 +27,11 @@ class BasicScoreCalculatorSpec {
             "9999.99, 1.0"
     )
     fun return_score_based_on_elapsed_time(elapsedTime: Double, expectedScore: Double) {
-        given(problemsRepository.findAll()).willReturn(listOf(
-                Problem("fib", 1)
-        ))
-
         val submission = submission(
                 elapsedTime = elapsedTime
         )
 
-        val result = calculator.calculate(submission, problemsRepository.findAll())
+        val result = calculator.calculate(submission, Problem("fib", 1))
         assertThat(result).isEqualTo(expectedScore)
     }
 
@@ -50,15 +42,11 @@ class BasicScoreCalculatorSpec {
             "3, 30.0"
     )
     fun return_score_based_on_level(level: Int, expectedScore: Double) {
-        given(problemsRepository.findAll()).willReturn(listOf(
-                Problem("fib", level)
-        ))
-
         val submission = submission(
                 elapsedTime = 0.1
         )
 
-        val result = calculator.calculate(submission, problemsRepository.findAll())
+        val result = calculator.calculate(submission, Problem("fib", level))
         assertThat(result).isEqualTo(expectedScore)
     }
 

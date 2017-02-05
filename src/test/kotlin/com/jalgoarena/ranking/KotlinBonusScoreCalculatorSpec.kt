@@ -20,10 +20,10 @@ class KotlinBonusScoreCalculatorSpec {
     @Test
     fun returns_150_percent_of_normal_score_for_kotlin() {
         val userSubmission = submission("kotlin")
-        given(calculator.calculate(userSubmission, listOf(Problem("fib", 1)))).willReturn(10.0)
+        given(calculator.calculate(userSubmission, Problem("fib", 1))).willReturn(10.0)
 
         val kotlinBonusScoreCalculator = KotlinBonusScoreCalculator(calculator)
-        val score = kotlinBonusScoreCalculator.calculate(userSubmission, listOf(Problem("fib", 1)))
+        val score = kotlinBonusScoreCalculator.calculate(userSubmission, Problem("fib", 1))
 
         assertThat(score).isEqualTo(15.0)
     }
@@ -33,10 +33,10 @@ class KotlinBonusScoreCalculatorSpec {
         val userSubmission = submission("java")
         val initialScore = 10.0
 
-        given(calculator.calculate(userSubmission, listOf(Problem("fib", 1)))).willReturn(initialScore)
+        given(calculator.calculate(userSubmission, Problem("fib", 1))).willReturn(initialScore)
 
         val kotlinBonusScoreCalculator = KotlinBonusScoreCalculator(calculator)
-        val score = kotlinBonusScoreCalculator.calculate(userSubmission, listOf(Problem("fib", 1)))
+        val score = kotlinBonusScoreCalculator.calculate(userSubmission, Problem("fib", 1))
 
         assertThat(score).isEqualTo(10.0)
     }
