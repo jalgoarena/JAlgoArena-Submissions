@@ -1,6 +1,6 @@
 buildscript {
     ext.kotlin_version = '1.0.6'
-    ext.spring_version = '1.4.0.RELEASE'
+    ext.spring_version = '1.5.1.RELEASE'
 
     repositories {
         mavenCentral()
@@ -16,7 +16,7 @@ plugins {
 }
 
 apply plugin: 'kotlin'
-apply plugin: 'spring-boot'
+apply plugin: 'org.springframework.boot'
 apply from: "$rootDir/gradle/versioning.gradle"
 
 group = 'jalgoarena'
