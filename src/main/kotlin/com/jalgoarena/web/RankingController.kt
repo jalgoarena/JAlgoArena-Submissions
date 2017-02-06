@@ -18,7 +18,7 @@ class RankingController(
 
     @GetMapping("/ranking", produces = arrayOf("application/json"))
     fun ranking() = rankingCalculator.ranking(
-            users = usersClient.findAllUsers(),
+            users = usersClient.findAllUsers().filter { it.username != "admin" },
             submissions = submissionsRepository.findAll(),
             problems = problemsRepository.findAll()
     )
