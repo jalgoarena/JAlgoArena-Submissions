@@ -44,9 +44,6 @@ dependencies {
             'org.jetbrains.xodus:xodus-openAPI:1.0.2',
             'org.jetbrains.xodus:xodus-entity-store:1.0.2'
 
-    runtime 'ch.qos.logback:logback-classic:1.1.7',
-            'ch.qos.logback:logback-core:1.1.7'
-
     testCompile 'junit:junit:4.12',
             'pl.pragmatists:JUnitParams:1.0.5',
             "org.springframework.boot:spring-boot-starter-test"
