@@ -37,10 +37,10 @@ class BasicRankingCalculatorSpec {
         val rankingCalculator = basicRankingCalculator(submissionsRepository)
 
         assertThat(rankingCalculator.ranking(USERS, submissionsRepository.findAll(), problemsRepository.findAll())).isEqualTo(listOf(
-                RankEntry("mikołaj", 0.0, emptyList(), "Kraków", "Tyniec Team"),
-                RankEntry("julia", 0.0, emptyList(), "Kraków", "Tyniec Team"),
-                RankEntry("joe", 0.0, emptyList(), "London", "London Team"),
-                RankEntry("tom", 0.0, emptyList(), "London", "London Team")
+                RankEntry("mikołaj", 0.0, emptyList(), "Kraków", "Tyniec Team", emptyList()),
+                RankEntry("julia", 0.0, emptyList(), "Kraków", "Tyniec Team", emptyList()),
+                RankEntry("joe", 0.0, emptyList(), "London", "London Team", emptyList()),
+                RankEntry("tom", 0.0, emptyList(), "London", "London Team", emptyList())
         ))
     }
 
@@ -64,10 +64,10 @@ class BasicRankingCalculatorSpec {
         val rankingCalculator = basicRankingCalculator(submissionsRepository)
 
         assertThat(rankingCalculator.ranking(USERS, submissionsRepository.findAll(), problemsRepository.findAll())).isEqualTo(listOf(
-                RankEntry("mikołaj", 40.0, listOf("fib", "word-ladder"), "Kraków", "Tyniec Team"),
-                RankEntry("julia", 40.0, listOf("fib", "word-ladder"), "Kraków", "Tyniec Team"),
-                RankEntry("joe", 20.0, listOf("2-sum"), "London", "London Team"),
-                RankEntry("tom", 20.0, listOf("2-sum"), "London", "London Team")
+                RankEntry("mikołaj", 40.0, listOf("fib", "word-ladder"), "Kraków", "Tyniec Team", listOf(Pair("java", 2))),
+                RankEntry("julia", 40.0, listOf("fib", "word-ladder"), "Kraków", "Tyniec Team", listOf(Pair("java", 2))),
+                RankEntry("joe", 20.0, listOf("2-sum"), "London", "London Team", listOf(Pair("java", 1))),
+                RankEntry("tom", 20.0, listOf("2-sum"), "London", "London Team", listOf(Pair("java", 1)))
         ))
     }
 

@@ -46,10 +46,10 @@ class RankingControllerSpec {
         given(problemsRepository.findAll()).willReturn(emptyList())
 
         given(rankingCalculator.ranking(emptyList(), emptyList(), emptyList())).willReturn(listOf(
-                RankEntry("mikołaj", 40.0, listOf("fib", "word-ladder"), "Kraków", "Tyniec Team"),
-                RankEntry("julia", 40.0, listOf("fib", "word-ladder"), "Kraków", "Tyniec Team"),
-                RankEntry("joe", 20.0, listOf("2-sum"), "London", "London Team"),
-                RankEntry("tom", 20.0, listOf("2-sum"), "London", "London Team")
+                RankEntry("mikołaj", 40.0, listOf("fib", "word-ladder"), "Kraków", "Tyniec Team", emptyList()),
+                RankEntry("julia", 40.0, listOf("fib", "word-ladder"), "Kraków", "Tyniec Team", emptyList()),
+                RankEntry("joe", 20.0, listOf("2-sum"), "London", "London Team", emptyList()),
+                RankEntry("tom", 20.0, listOf("2-sum"), "London", "London Team", emptyList())
         ))
 
         mockMvc.perform(get("/ranking")

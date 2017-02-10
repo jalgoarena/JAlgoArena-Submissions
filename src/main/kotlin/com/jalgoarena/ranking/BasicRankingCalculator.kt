@@ -35,13 +35,17 @@ class BasicRankingCalculator(
         return users.map { user ->
             val userSubmissions = submissions.filter { it.userId == user.id }
             val solvedProblems = userSubmissions.map { it.problemId }
+            val numberOfSolutionsPerLanguage = userSubmissions
+                    .groupBy { it.language }
+                    .map { Pair(it.key, it.value.size) }
 
             RankEntry(
                     user.username,
                     score(userSubmissions, problems),
                     solvedProblems,
                     user.region,
-                    user.team
+                    user.team,
+                    numberOfSolutionsPerLanguage
             )
         }.sortedByDescending { it.score }
     }
