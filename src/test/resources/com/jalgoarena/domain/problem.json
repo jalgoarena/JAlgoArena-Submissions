@@ -1,4 +1,5 @@
 {
   "id": "fib",
-  "level": 1
+  "level": 1,
+  "timeLimit": 1
 }

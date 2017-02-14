@@ -6,10 +6,12 @@ import com.jalgoarena.domain.Submission
 class BasicScoreCalculator : ScoreCalculator {
 
     override fun calculate(userSubmission: Submission, problem: Problem): Double {
-        val (id, level) = problem
+        val (id, level, timeLimit) = problem
 
         val basePointsPerLevel = (level - 1) * 10
-        return basePointsPerLevel + timeFactor(userSubmission.elapsedTime)
+        return basePointsPerLevel + timeFactor(
+                userSubmission.elapsedTime / timeLimit
+        )
     }
 
     private fun timeFactor(elapsedTime: Double) =

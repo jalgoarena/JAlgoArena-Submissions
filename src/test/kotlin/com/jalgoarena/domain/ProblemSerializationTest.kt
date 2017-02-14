@@ -30,13 +30,15 @@ class ProblemSerializationTest {
 
     private val PROBLEM = Problem(
             id = "fib",
-            level = 1
+            level = 1,
+            timeLimit = 1
     )
 
     @Language("JSON")
     private val  PROBLEM_JSON = """{
   "id": "fib",
-  "level": 1
+  "level": 1,
+  "timeLimit": 1
 }
 """
 }

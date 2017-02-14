@@ -47,9 +47,9 @@ class BasicRankingCalculatorSpec {
     @Test
     fun returns_users_in_descending_order_based_on_their_score_and_if_user_equal_following_creation_of_user_order() {
         given(problemsRepository.findAll()).willReturn(listOf(
-                Problem("fib", 1),
-                Problem("2-sum", 2),
-                Problem("word-ladder", 3)
+                Problem("fib", 1, 1),
+                Problem("2-sum", 2, 1),
+                Problem("word-ladder", 3, 1)
         ))
 
         given(submissionsRepository.findAll()).willReturn(listOf(
@@ -84,7 +84,7 @@ class BasicRankingCalculatorSpec {
     @Test
     fun returns_problem_ranking_sorted_by_times() {
         given(problemsRepository.findAll()).willReturn(listOf(
-                Problem("fib", 1)
+                Problem("fib", 1, 1)
         ))
 
         given(submissionsRepository.findByProblemId("fib")).willReturn(listOf(
