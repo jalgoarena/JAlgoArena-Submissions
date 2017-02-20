@@ -64,10 +64,10 @@ class BasicRankingCalculatorSpec {
         val rankingCalculator = basicRankingCalculator(submissionsRepository)
 
         assertThat(rankingCalculator.ranking(USERS, submissionsRepository.findAll(), problemsRepository.findAll())).isEqualTo(listOf(
-                RankEntry("mikołaj", 40.0, listOf("fib", "word-ladder"), "Kraków", "Tyniec Team", listOf(Pair("java", 2))),
-                RankEntry("julia", 40.0, listOf("fib", "word-ladder"), "Kraków", "Tyniec Team", listOf(Pair("java", 2))),
-                RankEntry("joe", 20.0, listOf("2-sum"), "London", "London Team", listOf(Pair("java", 1))),
-                RankEntry("tom", 20.0, listOf("2-sum"), "London", "London Team", listOf(Pair("java", 1)))
+                RankEntry("mikołaj", 60.0, listOf("fib", "word-ladder"), "Kraków", "Tyniec Team", listOf(Pair("java", 2))),
+                RankEntry("julia", 60.0, listOf("fib", "word-ladder"), "Kraków", "Tyniec Team", listOf(Pair("java", 2))),
+                RankEntry("joe", 30.0, listOf("2-sum"), "London", "London Team", listOf(Pair("java", 1))),
+                RankEntry("tom", 30.0, listOf("2-sum"), "London", "London Team", listOf(Pair("java", 1)))
         ))
     }
 

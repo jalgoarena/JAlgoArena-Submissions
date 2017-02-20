@@ -38,8 +38,8 @@ class BasicScoreCalculatorSpec {
     @Test
     @Parameters(
             "1, 10.0",
-            "2, 20.0",
-            "3, 30.0"
+            "2, 30.0",
+            "3, 50.0"
     )
     fun return_score_based_on_level(level: Int, expectedScore: Double) {
         val submission = submission(
