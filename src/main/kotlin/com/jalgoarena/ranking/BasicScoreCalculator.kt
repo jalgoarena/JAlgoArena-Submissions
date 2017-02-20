@@ -8,7 +8,7 @@ class BasicScoreCalculator : ScoreCalculator {
     override fun calculate(userSubmission: Submission, problem: Problem): Double {
         val (id, level, timeLimit) = problem
 
-        val basePointsPerLevel = (level - 1) * 10
+        val basePointsPerLevel = (level - 1) * 20
         return basePointsPerLevel + timeFactor(
                 userSubmission.elapsedTime / timeLimit
         )
