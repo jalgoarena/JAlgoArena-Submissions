@@ -81,7 +81,7 @@ class BonusPointsForBestTimeRankingCalculator(
             val problemSubmissions = submissions.filter { it.problemId == problem }
             val fastestSubmission = problemSubmissions.minBy { it.elapsedTime }
 
-            if (fastestSubmission != null) {
+            if (fastestSubmission != null && bonusPoints[fastestSubmission.userId] != null) {
                 bonusPoints[fastestSubmission.userId] = bonusPoints[fastestSubmission.userId] as Double + 1.0
             }
         }

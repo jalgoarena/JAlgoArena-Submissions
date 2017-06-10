@@ -1,6 +1,6 @@
 buildscript {
-    ext.kotlin_version = '1.0.6'
-    ext.spring_version = '1.5.1.RELEASE'
+    ext.kotlin_version = '1.1.2-2'
+    ext.spring_version = '1.5.4.RELEASE'
 
     repositories {
         mavenCentral()
@@ -41,8 +41,8 @@ dependencies {
             "org.springframework.boot:spring-boot-starter-actuator",
             'org.springframework.cloud:spring-cloud-starter-eureka',
             "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version",
-            'org.jetbrains.xodus:xodus-openAPI:1.0.2',
-            'org.jetbrains.xodus:xodus-entity-store:1.0.2'
+            'org.jetbrains.xodus:xodus-openAPI:1.0.5',
+            'org.jetbrains.xodus:xodus-entity-store:1.0.5'
 
     testCompile 'junit:junit:4.12',
             'pl.pragmatists:JUnitParams:1.0.5',
@@ -68,7 +68,7 @@ task stage {
 
 dependencyManagement {
     imports {
-        mavenBom "org.springframework.cloud:spring-cloud-dependencies:Camden.SR3"
+        mavenBom "org.springframework.cloud:spring-cloud-dependencies:Camden.SR7"
     }
 }
 

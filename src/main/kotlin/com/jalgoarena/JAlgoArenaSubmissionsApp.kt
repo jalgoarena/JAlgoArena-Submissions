@@ -7,7 +7,7 @@ import org.springframework.cloud.netflix.eureka.EnableEurekaClient
 
 @SpringBootApplication
 @EnableEurekaClient
-@EnableCaching
+@EnableCaching(proxyTargetClass=true)
 open class JAlgoArenaSubmissionsApp
 
 fun main(args: Array<String>) {

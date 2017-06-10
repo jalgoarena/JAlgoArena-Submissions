@@ -13,7 +13,7 @@ open class AppConfiguration {
 
     @Bean
     open fun rankingCalculator(submissionsRepository : SubmissionsRepository, problemsClient: ProblemsClient): RankingCalculator {
-        val scoreCalculator = KotlinBonusScoreCalculator(BasicScoreCalculator())
+        val scoreCalculator = BasicScoreCalculator()
         val rankingCalculator = BasicRankingCalculator(submissionsRepository, scoreCalculator)
 
         return BonusPointsForBestTimeRankingCalculator(
