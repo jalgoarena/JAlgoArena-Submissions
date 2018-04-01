@@ -2,7 +2,7 @@ package com.jalgoarena.web
 
 import com.jalgoarena.data.ProblemsRepository
 import com.jalgoarena.data.SubmissionsRepository
-import com.jalgoarena.domain.Submission
+import com.jalgoarena.domain.Constants.ADMIN_ROLE
 import com.jalgoarena.domain.User
 import com.jalgoarena.ranking.RankingCalculator
 import com.jalgoarena.ranking.SolvedRatioCalculator
@@ -20,7 +20,6 @@ class SubmissionsController(
         @Inject private val submissionsRepository: SubmissionsRepository
 ) : SolvedRatioCalculator {
 
-    private val ADMIN_ROLE = "ADMIN"
 
     @GetMapping("/submissions", produces = arrayOf("application/json"))
     fun submissions(
@@ -59,17 +58,6 @@ class SubmissionsController(
 
                 ok(rankingCalculator.userRankingDetails(user, problems, users))
             }
-        }
-    }
-
-    @PutMapping("/submissions", produces = arrayOf("application/json"))
-    fun addOrUpdateSubmission(
-            @RequestBody submission: Submission,
-            @RequestHeader("X-Authorization", required = false) token: String?
-    ) = checkUser(token) { user ->
-        when {
-            ADMIN_ROLE != user.role && user.id != submission.userId -> unauthorized()
-            else -> ResponseEntity(submissionsRepository.addOrUpdate(submission), HttpStatus.CREATED)
         }
     }
 

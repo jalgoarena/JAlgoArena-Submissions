@@ -2,60 +2,61 @@ package com.jalgoarena.data
 
 import com.jalgoarena.domain.Constants
 import com.jalgoarena.domain.Submission
+import com.jalgoarena.domain.SubmissionInProgress
 import jetbrains.exodus.entitystore.*
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Repository
 
 @Repository
-class XodusSubmissionsRepository(dbName: String) : SubmissionsRepository {
+class XodusSubmissionsInProgressRepository(dbName: String) : SubmissionsInProgressRepository {
 
-    constructor() : this(Constants.storePathSubmissions)
+    constructor() : this(Constants.storePathSubmissionsInProgress)
 
     private val LOG = LoggerFactory.getLogger(this.javaClass)
     private val store: PersistentEntityStore = PersistentEntityStores.newInstance(dbName)
 
-    override fun findAll(): List<Submission> {
+    override fun findAll(): List<SubmissionInProgress> {
         return readonly {
-            it.getAll(Constants.entityType).map { Submission.from(it) }
+            it.getAll(Constants.entityType).map { SubmissionInProgress.from(it) }
         }
     }
 
-    override fun findByUserId(userId: String): List<Submission> {
+    override fun findByUserId(userId: String): List<SubmissionInProgress> {
         return readonly {
             it.find(
                     Constants.entityType,
                     Constants.userId,
                     userId
-            ).map { Submission.from(it) }
+            ).map { SubmissionInProgress.from(it) }
         }
     }
 
-    override fun findById(id: String): Submission? {
+    override fun findById(id: String): SubmissionInProgress? {
         return try {
             readonly {
                 val entityId = PersistentEntityId.toEntityId(id)
-                Submission.from(it.getEntity(entityId))
+                SubmissionInProgress.from(it.getEntity(entityId))
             }
         } catch(e: EntityRemovedInDatabaseException) {
             null
         }
     }
 
-    override fun findByProblemId(problemId: String): List<Submission> {
+    override fun findByProblemId(problemId: String): List<SubmissionInProgress> {
         return readonly {
             it.find(
                     Constants.entityType,
                     Constants.problemId,
                     problemId
-            ).map { Submission.from(it) }
+            ).map { SubmissionInProgress.from(it) }
         }
     }
 
-    override fun addOrUpdate(submission: Submission): Submission {
+    override fun addOrUpdate(submissionInProgress: SubmissionInProgress): SubmissionInProgress {
         return transactional {
 
-            val existingEntity = it.find(Constants.entityType, Constants.userId, submission.userId).intersect(
-                    it.find(Constants.entityType, Constants.problemId, submission.problemId)
+            val existingEntity = it.find(Constants.entityType, Constants.userId, submissionInProgress.userId).intersect(
+                    it.find(Constants.entityType, Constants.problemId, submissionInProgress.problemId)
             ).firstOrNull()
 
             val entity = when (existingEntity) {
@@ -63,24 +64,23 @@ class XodusSubmissionsRepository(dbName: String) : SubmissionsRepository {
                 else -> existingEntity
             }
 
-            updateEntity(entity, submission)
+            updateEntity(entity, submissionInProgress)
         }
     }
 
-    private fun updateEntity(entity: Entity, submission: Submission): Submission {
+    private fun updateEntity(entity: Entity, submission: SubmissionInProgress): SubmissionInProgress {
         entity.apply {
-            setProperty(Constants.problemId, submission.problemId)
-            setProperty(Constants.elapsedTime, submission.elapsedTime)
             setProperty(Constants.sourceCode, submission.sourceCode)
-            setProperty(Constants.statusCode, submission.statusCode)
             setProperty(Constants.userId, submission.userId)
             setProperty(Constants.language, submission.language)
+            setProperty(Constants.submissionId, submission.submissionId)
+            setProperty(Constants.problemId, submission.problemId)
         }
 
-        return Submission.from(entity)
+        return SubmissionInProgress.from(entity)
     }
 
-    override fun delete(id: String): List<Submission> {
+    override fun delete(id: String): List<SubmissionInProgress> {
         val entityId = PersistentEntityId.toEntityId(id)
 
         transactional {

@@ -1,13 +1,19 @@
 package com.jalgoarena.domain
 
 object Constants {
-    val problemId = "problemId"
-    val level = "level"
-    val elapsedTime = "elapsedTime"
-    val sourceCode = "sourceCode"
-    val statusCode = "statusCode"
-    val userId = "userId"
-    val language = "language"
-    val storePath = "./SubmissionsStore"
-    val entityType = "Submission"
+    const val problemId = "problemId"
+    const val level = "level"
+    const val elapsedTime = "elapsedTime"
+    const val sourceCode = "sourceCode"
+    const val statusCode = "statusCode"
+    const val userId = "userId"
+    const val language = "language"
+    const val submissionId = "submissionId"
+    const val state = "state"
+    const val storePathSubmissions = "./SubmissionsStore"
+    const val storePathSubmissionsInProgress = "./SubmissionsInProgressStore"
+    const val entityType = "Submission"
+    const val ADMIN_ROLE = "ADMIN"
+    const val DONE = "DONE"
+    const val IN_PROGRESS = "IN PROGRESS"
 }

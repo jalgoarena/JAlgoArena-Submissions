@@ -9,6 +9,12 @@ eureka:
 server:
   port: ${PORT:5003}
 
+spring:
+  kafka:
+    bootstrap-servers: ${BOOTSTRAP_SERVERS:localhost:9092}
+    consumer:
+      group-id: submissions
+
 ---
 spring:
   profiles: heroku

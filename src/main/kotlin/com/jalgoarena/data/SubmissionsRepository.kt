@@ -11,3 +11,4 @@ interface SubmissionsRepository {
     fun delete(id: String): List<Submission>
     fun destroy()
 }
+
