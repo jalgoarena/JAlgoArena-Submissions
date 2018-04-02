@@ -1,11 +1,11 @@
 package com.jalgoarena.ranking
 
 import com.jalgoarena.domain.Problem
-import com.jalgoarena.domain.Submission
+import com.jalgoarena.domain.SubmissionResult
 
 class BasicScoreCalculator : ScoreCalculator {
 
-    override fun calculate(userSubmission: Submission, problem: Problem): Double {
+    override fun calculate(userSubmission: SubmissionResult, problem: Problem): Double {
         val (_, level, timeLimit) = problem
 
         val basePointsPerLevel = (level - 1) * 20

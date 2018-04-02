@@ -2,7 +2,7 @@ package com.jalgoarena.web
 
 import com.fasterxml.jackson.databind.node.ArrayNode
 import com.jalgoarena.data.ProblemsRepository
-import com.jalgoarena.data.SubmissionsRepository
+import com.jalgoarena.data.SubmissionResultsRepository
 import com.jalgoarena.domain.ProblemRankEntry
 import com.jalgoarena.domain.RankEntry
 import com.jalgoarena.ranking.RankingCalculator
@@ -37,12 +37,12 @@ class RankingControllerSpec {
     private lateinit var problemsRepository: ProblemsRepository
 
     @MockBean
-    private lateinit var submissionsRepository: SubmissionsRepository
+    private lateinit var submissionResultsRepository: SubmissionResultsRepository
 
     @Test
     fun returns_200_and_ranking() {
         given(usersClient.findAllUsers()).willReturn(emptyList())
-        given(submissionsRepository.findAll()).willReturn(emptyList())
+        given(submissionResultsRepository.findAll()).willReturn(emptyList())
         given(problemsRepository.findAll()).willReturn(emptyList())
 
         given(rankingCalculator.ranking(emptyList(), emptyList(), emptyList())).willReturn(listOf(

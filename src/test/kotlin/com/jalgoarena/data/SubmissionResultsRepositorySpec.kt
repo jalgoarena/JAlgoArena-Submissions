@@ -1,26 +1,26 @@
 package com.jalgoarena.data
 
-import com.jalgoarena.domain.Submission
+import com.jalgoarena.domain.SubmissionResult
 import jetbrains.exodus.entitystore.PersistentEntityStores
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.AfterClass
 import org.junit.Test
 import java.io.File
 
-class SubmissionsRepositorySpec {
+class SubmissionResultsRepositorySpec {
 
     companion object {
 
         val testDbName = "./SubmissionsStoreForTest"
-        val repository: SubmissionsRepository
+        val REPOSITORY: SubmissionResultsRepository
         init {
             PersistentEntityStores.newInstance(testDbName).close()
-            repository = XodusSubmissionsRepository(testDbName)
+            REPOSITORY = XodusSubmissionResultsRepository(XodusDb(testDbName))
         }
 
         @AfterClass
         @JvmStatic fun tearDown() {
-            repository.destroy()
+            REPOSITORY.destroy()
             File(testDbName).deleteRecursively()
         }
 
@@ -28,42 +28,42 @@ class SubmissionsRepositorySpec {
 
     @Test
     fun adds_new_submission() {
-        val submission = repository.addOrUpdate(user1SubmissionForFibInKotlin)
+        val submission = REPOSITORY.addOrUpdate(user1SubmissionForFibInKotlin)
         assertThat(submission.id).isNotNull()
     }
 
     @Test
     fun updates_submission_if_userId_and_problemId_are_same() {
-        val submissionKotlin = repository.addOrUpdate(user1SubmissionForFibInKotlin)
-        val submissionJava = repository.addOrUpdate(user1SubmissionForFibInJava)
+        val submissionKotlin = REPOSITORY.addOrUpdate(user1SubmissionForFibInKotlin)
+        val submissionJava = REPOSITORY.addOrUpdate(user1SubmissionForFibInJava)
 
         assertThat(submissionJava.id).isEqualTo(submissionKotlin.id)
     }
 
     @Test
     fun update_values_for_new_submission_with_same_problemId_and_userId() {
-        val submissionKotlin = repository.addOrUpdate(user1SubmissionForFibInKotlin)
-        repository.addOrUpdate(user1SubmissionForFibInJava)
+        val submissionKotlin = REPOSITORY.addOrUpdate(user1SubmissionForFibInKotlin)
+        REPOSITORY.addOrUpdate(user1SubmissionForFibInJava)
 
-        val submission = repository.findById(submissionKotlin.id!!)
+        val submission = REPOSITORY.findById(submissionKotlin.id!!)
         assertThat(submission!!.language).isEqualTo("java")
     }
 
     @Test
     fun deletes_already_added_submission() {
-        val submission = repository.addOrUpdate(user2SubmissionForFibInKotlin)
-        repository.delete(submission.id!!)
-        val deletedSubmission = repository.findById(submission.id!!)
+        val submission = REPOSITORY.addOrUpdate(user2SubmissionForFibInKotlin)
+        REPOSITORY.delete(submission.id!!)
+        val deletedSubmission = REPOSITORY.findById(submission.id!!)
 
         assertThat(deletedSubmission).isNull()
     }
 
     @Test
     fun returns_all_added_submissions() {
-        val submission1 = repository.addOrUpdate(user1SubmissionForFibInKotlin)
-        val submission2 = repository.addOrUpdate(user2SubmissionForFibInKotlin)
+        val submission1 = REPOSITORY.addOrUpdate(user1SubmissionForFibInKotlin)
+        val submission2 = REPOSITORY.addOrUpdate(user2SubmissionForFibInKotlin)
 
-        val allSubmissions = repository.findAll()
+        val allSubmissions = REPOSITORY.findAll()
         assertThat(allSubmissions).isEqualTo(listOf(
                 submission1,
                 submission2
@@ -72,10 +72,10 @@ class SubmissionsRepositorySpec {
 
     @Test
     fun returns_only_user_owned_submissions() {
-        val submission1 = repository.addOrUpdate(user1SubmissionForFibInKotlin)
-        repository.addOrUpdate(user2SubmissionForFibInKotlin)
+        val submission1 = REPOSITORY.addOrUpdate(user1SubmissionForFibInKotlin)
+        REPOSITORY.addOrUpdate(user2SubmissionForFibInKotlin)
 
-        val user1Submissions = repository.findByUserId(user1)
+        val user1Submissions = REPOSITORY.findByUserId(user1)
         assertThat(user1Submissions).isEqualTo(listOf(
                 submission1
         ))
@@ -83,11 +83,11 @@ class SubmissionsRepositorySpec {
 
     @Test
     fun finds_all_submissions_for_given_problem_id() {
-        val submission1 = repository.addOrUpdate(user1SubmissionForFibInKotlin)
-        val submission2 = repository.addOrUpdate(user2SubmissionForFibInKotlin)
-        repository.addOrUpdate(user2SubmissionForTwoSumInKotlin)
+        val submission1 = REPOSITORY.addOrUpdate(user1SubmissionForFibInKotlin)
+        val submission2 = REPOSITORY.addOrUpdate(user2SubmissionForFibInKotlin)
+        REPOSITORY.addOrUpdate(user2SubmissionForTwoSumInKotlin)
 
-        val fibSubmissions = repository.findByProblemId("fib")
+        val fibSubmissions = REPOSITORY.findByProblemId("fib")
         assertThat(fibSubmissions).isEqualTo(listOf(
                 submission1,
                 submission2
@@ -96,12 +96,24 @@ class SubmissionsRepositorySpec {
 
     @Test
     fun returns_empty_list_if_no_submissions_with_a_given_problem_id() {
-        val submissions = repository.findByProblemId("non-existing")
+        val submissions = REPOSITORY.findByProblemId("non-existing")
         assertThat(submissions).isEmpty()
     }
 
     private fun submission(problemId: String, userId: String, language: String) =
-            Submission(problemId, 0.5, "class Solution", "ACCEPTED", userId, language)
+            SubmissionResult(
+                    problemId,
+                    0.5,
+                    "class Solution",
+                    "ACCEPTED",
+                    userId,
+                    language,
+                    "1",
+                    10L,
+                    null,
+                    emptyList(),
+                    null
+            )
 
     private val user1 = "User#1"
     private val user2 = "User#2"

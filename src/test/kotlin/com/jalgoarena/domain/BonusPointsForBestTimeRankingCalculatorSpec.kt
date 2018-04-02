@@ -1,7 +1,7 @@
 package com.jalgoarena.domain
 
 import com.jalgoarena.data.ProblemsRepository
-import com.jalgoarena.data.SubmissionsRepository
+import com.jalgoarena.data.SubmissionResultsRepository
 import com.jalgoarena.ranking.BasicRankingCalculator
 import com.jalgoarena.ranking.BasicScoreCalculator
 import com.jalgoarena.ranking.BonusPointsForBestTimeRankingCalculator
@@ -14,13 +14,13 @@ import org.mockito.Mockito.mock
 
 class BonusPointsForBestTimeRankingCalculatorSpec {
 
-    private lateinit var submissionsRepository: SubmissionsRepository
+    private lateinit var submissionResultsRepository: SubmissionResultsRepository
     private lateinit var problemsRepository: ProblemsRepository
     private lateinit var rankingCalculator: RankingCalculator
 
     @Before
     fun setUp() {
-        submissionsRepository = mock(SubmissionsRepository::class.java)
+        submissionResultsRepository = mock(SubmissionResultsRepository::class.java)
         rankingCalculator = mock(RankingCalculator::class.java)
         problemsRepository = mock(ProblemsRepository::class.java)
     }
@@ -33,7 +33,7 @@ class BonusPointsForBestTimeRankingCalculatorSpec {
                 Problem("word-ladder", 3, 1)
         ))
 
-        given(submissionsRepository.findAll()).willReturn(listOf(
+        given(submissionResultsRepository.findAll()).willReturn(listOf(
                 submission("fib", 0.01, USER_MIKOLAJ.id),
                 submission("fib", 0.011, USER_JULIA.id),
                 submission("2-sum", 0.01, USER_JOE.id),
@@ -42,9 +42,9 @@ class BonusPointsForBestTimeRankingCalculatorSpec {
                 submission("word-ladder", 0.011, USER_JULIA.id)
         ))
 
-        val rankingCalculator = bonusPointsForBestTimeRankingCalculator(submissionsRepository)
+        val rankingCalculator = bonusPointsForBestTimeRankingCalculator(submissionResultsRepository)
 
-        assertThat(rankingCalculator.ranking(USERS, submissionsRepository.findAll(), problemsRepository.findAll())).isEqualTo(listOf(
+        assertThat(rankingCalculator.ranking(USERS, submissionResultsRepository.findAll(), problemsRepository.findAll())).isEqualTo(listOf(
                 RankEntry("mikołaj", 62.0, listOf("fib", "word-ladder"), "Kraków", "Tyniec Team", listOf(Pair("java", 2))),
                 RankEntry("julia", 60.0, listOf("fib", "word-ladder"), "Kraków", "Tyniec Team", listOf(Pair("java", 2))),
                 RankEntry("joe", 31.0, listOf("2-sum"), "London", "London Team", listOf(Pair("java", 1))),
@@ -58,14 +58,14 @@ class BonusPointsForBestTimeRankingCalculatorSpec {
                 Problem("fib", 1, 1)
         ))
 
-        given(submissionsRepository.findAll()).willReturn(listOf(
+        given(submissionResultsRepository.findAll()).willReturn(listOf(
                 submission("fib", 0.01, USER_JULIA.id),
                 submission("fib", 0.001, USER_JOE.id)
         ))
 
-        val rankingCalculator = bonusPointsForBestTimeRankingCalculator(submissionsRepository)
+        val rankingCalculator = bonusPointsForBestTimeRankingCalculator(submissionResultsRepository)
 
-        assertThat(rankingCalculator.ranking(USERS, submissionsRepository.findAll(), problemsRepository.findAll())).isEqualTo(listOf(
+        assertThat(rankingCalculator.ranking(USERS, submissionResultsRepository.findAll(), problemsRepository.findAll())).isEqualTo(listOf(
                 RankEntry("joe", 11.0, listOf("fib"), "London", "London Team", listOf(Pair("java", 1))),
                 RankEntry("julia", 10.0, listOf("fib"), "Kraków", "Tyniec Team", listOf(Pair("java", 1))),
                 RankEntry("mikołaj", 0.0, emptyList(), "Kraków", "Tyniec Team", emptyList()),
@@ -75,9 +75,9 @@ class BonusPointsForBestTimeRankingCalculatorSpec {
 
     @Test
     fun returns_empty_problem_ranking_when_no_submissions_for_problem() {
-        given(submissionsRepository.findByProblemId("fib")).willReturn(emptyList())
+        given(submissionResultsRepository.findByProblemId("fib")).willReturn(emptyList())
 
-        val rankingCalculator = bonusPointsForBestTimeRankingCalculator(submissionsRepository)
+        val rankingCalculator = bonusPointsForBestTimeRankingCalculator(submissionResultsRepository)
 
         assertThat(rankingCalculator.problemRanking("fib", USERS, problemsRepository.findAll()))
                 .isEqualTo(emptyList<ProblemRankEntry>())
@@ -89,14 +89,14 @@ class BonusPointsForBestTimeRankingCalculatorSpec {
                 Problem("fib", 1, 1)
         ))
 
-        given(submissionsRepository.findByProblemId("fib")).willReturn(listOf(
+        given(submissionResultsRepository.findByProblemId("fib")).willReturn(listOf(
                 submission("fib", 0.01, USER_MIKOLAJ.id),
                 submission("fib", 0.0001, USER_JULIA.id),
                 submission("fib", 0.001, USER_JOE.id),
                 submission("fib", 0.1, USER_TOM.id)
         ))
 
-        val rankingCalculator = bonusPointsForBestTimeRankingCalculator(submissionsRepository)
+        val rankingCalculator = bonusPointsForBestTimeRankingCalculator(submissionResultsRepository)
 
         assertThat(rankingCalculator.problemRanking("fib", USERS, problemsRepository.findAll())).isEqualTo(listOf(
                 ProblemRankEntry("julia", 11.0, 0.0001, "java"),
@@ -106,14 +106,26 @@ class BonusPointsForBestTimeRankingCalculatorSpec {
         ))
     }
 
-    private fun bonusPointsForBestTimeRankingCalculator(repository: SubmissionsRepository) =
+    private fun bonusPointsForBestTimeRankingCalculator(repository: SubmissionResultsRepository) =
             BonusPointsForBestTimeRankingCalculator(
                     repository,
                     BasicRankingCalculator(repository, BasicScoreCalculator())
             )
 
     private fun submission(problemId: String, elapsedTime: Double, userId: String) =
-            Submission(problemId, elapsedTime, DUMMY_SOURCE_CODE, STATUS_ACCEPTED, userId, "java")
+            SubmissionResult(
+                    problemId,
+                    elapsedTime,
+                    DUMMY_SOURCE_CODE,
+                    STATUS_ACCEPTED,
+                    userId,
+                    "java",
+                    "2",
+                    10L,
+                    null,
+                    emptyList(),
+                    null
+            )
 
     private val USER_MIKOLAJ = User("mikołaj", "Kraków", "Tyniec Team", "USER", "0-0")
     private val USER_JULIA = User("julia", "Kraków", "Tyniec Team", "USER", "0-1")

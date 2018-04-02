@@ -5,5 +5,8 @@
   "statusCode": "ACCEPTED",
   "userId": "0-0",
   "language": "kotlin",
-  "id": "2-4"
+  "id": "2-4",
+  "submissionId": "2",
+  "consumedMemory": 10,
+  "testcaseResults": []
 }

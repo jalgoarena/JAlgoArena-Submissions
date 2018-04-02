@@ -1,7 +1,7 @@
 package com.jalgoarena.web
 
 import com.jalgoarena.data.ProblemsRepository
-import com.jalgoarena.data.SubmissionsRepository
+import com.jalgoarena.data.SubmissionResultsRepository
 import com.jalgoarena.domain.Constants.ADMIN_ROLE
 import com.jalgoarena.domain.User
 import com.jalgoarena.ranking.RankingCalculator
@@ -17,36 +17,36 @@ class SubmissionsController(
         @Inject private val rankingCalculator: RankingCalculator,
         @Inject private val usersClient: UsersClient,
         @Inject private val problemsRepository: ProblemsRepository,
-        @Inject private val submissionsRepository: SubmissionsRepository
+        @Inject private val submissionResultsRepository: SubmissionResultsRepository
 ) : SolvedRatioCalculator {
 
 
-    @GetMapping("/submissions", produces = arrayOf("application/json"))
+    @GetMapping("/submissions", produces = ["application/json"])
     fun submissions(
             @RequestHeader("X-Authorization", required = false) token: String?
     ) = checkUser(token) { user ->
         when {
             ADMIN_ROLE != user.role -> unauthorized()
-            else -> ok(submissionsRepository.findAll())
+            else -> ok(submissionResultsRepository.findAll())
         }
     }
 
-    @GetMapping("/submissions/solved-ratio", produces = arrayOf("application/json"))
-    fun submissionsSolvedRatio() = calculateSubmissionsSolvedRatioAndReturnIt(submissionsRepository.findAll())
+    @GetMapping("/submissions/solved-ratio", produces = ["application/json"])
+    fun submissionsSolvedRatio() = calculateSubmissionsSolvedRatioAndReturnIt(submissionResultsRepository.findAll())
 
-    @DeleteMapping("/submissions/{submissionId}", produces = arrayOf("application/json"))
+    @DeleteMapping("/submissions/{submissionId}", produces = ["application/json"])
     fun deleteSubmission(
             @PathVariable submissionId: String,
             @RequestHeader("X-Authorization", required = false) token: String?
     ) = checkUser(token) { user ->
         when {
             ADMIN_ROLE != user.role -> unauthorized()
-            else -> ok(submissionsRepository.delete(submissionId))
+            else -> ok(submissionResultsRepository.delete(submissionId))
         }
     }
 
-    @GetMapping("/submissions/{userId}", produces = arrayOf("application/json"))
-    fun userSubmissions(
+    @GetMapping("/submissions/{userId}", produces = ["application/json"])
+    fun userRankingDetails(
             @PathVariable userId: String,
             @RequestHeader("X-Authorization", required = false) token: String?
     ) = checkUser(token) { user ->
@@ -57,6 +57,20 @@ class SubmissionsController(
                 val users = usersClient.findAllUsers()
 
                 ok(rankingCalculator.userRankingDetails(user, problems, users))
+            }
+        }
+    }
+
+    @GetMapping("/submissions/find/{userId}/{submissionId}", produces = ["application/json"])
+    fun findUserSubmissionBySubmissionId(
+            @PathVariable userId: String,
+            @PathVariable submissionId: String,
+            @RequestHeader("X-Authorization", required = false) token: String?
+    ) = checkUser(token) { user ->
+        when {
+            user.id != userId -> unauthorized()
+            else -> {
+                ok(submissionResultsRepository.findBySubmissionId(submissionId))
             }
         }
     }

@@ -7,23 +7,21 @@ import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Repository
 
 @Repository
-class XodusSubmissionsRepository(dbName: String) : SubmissionsRepository {
+class XodusSubmissionsRepository(db: Db) : SubmissionsRepository {
 
-    constructor() : this(Constants.storePathSubmissions)
-
-    private val LOG = LoggerFactory.getLogger(this.javaClass)
-    private val store: PersistentEntityStore = PersistentEntityStores.newInstance(dbName)
+    private val store = db.store
+    private val logger = LoggerFactory.getLogger(this.javaClass)
 
     override fun findAll(): List<Submission> {
         return readonly {
-            it.getAll(Constants.entityType).map { Submission.from(it) }
+            it.getAll(Constants.SUBMISSION_ENTITY_TYPE).map { Submission.from(it) }
         }
     }
 
     override fun findByUserId(userId: String): List<Submission> {
         return readonly {
             it.find(
-                    Constants.entityType,
+                    Constants.SUBMISSION_ENTITY_TYPE,
                     Constants.userId,
                     userId
             ).map { Submission.from(it) }
@@ -44,7 +42,7 @@ class XodusSubmissionsRepository(dbName: String) : SubmissionsRepository {
     override fun findByProblemId(problemId: String): List<Submission> {
         return readonly {
             it.find(
-                    Constants.entityType,
+                    Constants.SUBMISSION_ENTITY_TYPE,
                     Constants.problemId,
                     problemId
             ).map { Submission.from(it) }
@@ -54,12 +52,12 @@ class XodusSubmissionsRepository(dbName: String) : SubmissionsRepository {
     override fun addOrUpdate(submission: Submission): Submission {
         return transactional {
 
-            val existingEntity = it.find(Constants.entityType, Constants.userId, submission.userId).intersect(
-                    it.find(Constants.entityType, Constants.problemId, submission.problemId)
+            val existingEntity = it.find(Constants.SUBMISSION_ENTITY_TYPE, Constants.userId, submission.userId).intersect(
+                    it.find(Constants.SUBMISSION_ENTITY_TYPE, Constants.problemId, submission.problemId)
             ).firstOrNull()
 
             val entity = when (existingEntity) {
-                null -> it.newEntity(Constants.entityType)
+                null -> it.newEntity(Constants.SUBMISSION_ENTITY_TYPE)
                 else -> existingEntity
             }
 
@@ -69,12 +67,12 @@ class XodusSubmissionsRepository(dbName: String) : SubmissionsRepository {
 
     private fun updateEntity(entity: Entity, submission: Submission): Submission {
         entity.apply {
-            setProperty(Constants.problemId, submission.problemId)
-            setProperty(Constants.elapsedTime, submission.elapsedTime)
             setProperty(Constants.sourceCode, submission.sourceCode)
-            setProperty(Constants.statusCode, submission.statusCode)
             setProperty(Constants.userId, submission.userId)
             setProperty(Constants.language, submission.language)
+            setProperty(Constants.submissionId, submission.submissionId)
+            setProperty(Constants.problemId, submission.problemId)
+            setProperty(Constants.state, submission.state ?: Constants.IN_PROGRESS)
         }
 
         return Submission.from(entity)
@@ -96,12 +94,12 @@ class XodusSubmissionsRepository(dbName: String) : SubmissionsRepository {
         var count = 1
         while (proceed && count <= 10) {
             try {
-                LOG.info("trying to close persistent store. attempt {}", count)
+                logger.info("trying to close persistent store. attempt {}", count)
                 store.close()
                 proceed = false
-                LOG.info("persistent store closed")
+                logger.info("persistent store closed")
             } catch (e: RuntimeException) {
-                LOG.error("error closing persistent store", e)
+                logger.error("error closing persistent store", e)
                 count++
             }
         }

@@ -15,13 +15,13 @@ data class SubmissionWithRankingDetails (
         val problemRankPlace: Int) {
 
     companion object {
-        fun from (submission: Submission, level: Int, score: Double, problemRankPlace: Int) = SubmissionWithRankingDetails(
-                submission.problemId,
-                submission.elapsedTime,
-                submission.sourceCode,
-                submission.statusCode,
-                submission.language,
-                submission.id!!,
+        fun from (submissionResult: SubmissionResult, level: Int, score: Double, problemRankPlace: Int) = SubmissionWithRankingDetails(
+                submissionResult.problemId,
+                submissionResult.elapsedTime,
+                submissionResult.sourceCode,
+                submissionResult.statusCode,
+                submissionResult.language,
+                submissionResult.id!!,
                 level,
                 score,
                 problemRankPlace

@@ -52,6 +52,7 @@ dependencies {
 
     testCompile 'junit:junit:4.12',
             'pl.pragmatists:JUnitParams:1.0.5',
+            "org.springframework.kafka:spring-kafka-test",
             "org.springframework.boot:spring-boot-starter-test"
 }
 

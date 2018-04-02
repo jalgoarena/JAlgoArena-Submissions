@@ -2,8 +2,8 @@ package com.jalgoarena.web
 
 import com.fasterxml.jackson.databind.node.ArrayNode
 import com.jalgoarena.data.ProblemsRepository
-import com.jalgoarena.data.SubmissionsRepository
-import com.jalgoarena.domain.Submission
+import com.jalgoarena.data.SubmissionResultsRepository
+import com.jalgoarena.domain.SubmissionResult
 import com.jalgoarena.domain.SubmissionWithRankingDetails
 import com.jalgoarena.domain.User
 import com.jalgoarena.ranking.RankingCalculator
@@ -33,7 +33,7 @@ class SubmissionsControllerSpec {
     private lateinit var usersClient: UsersClient
 
     @MockBean
-    private lateinit var submissionRepository: SubmissionsRepository
+    private lateinit var submissionRepository: SubmissionResultsRepository
 
     @MockBean
     private lateinit var problemsRepository: ProblemsRepository
@@ -152,68 +152,6 @@ class SubmissionsControllerSpec {
     }
 
     @Test
-    fun returns_401_if_user_is_not_authorized_for_put_submissions() {
-        mockMvc.perform(put("/submissions")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(submissionJson(USER.id)))
-                .andExpect(status().isUnauthorized)
-    }
-
-    @Test
-    fun returns_401_if_user_is_the_same_as_submission_owner_for_put_submissions() {
-        given(usersClient.findUser(DUMMY_TOKEN)).willReturn(USER)
-
-        mockMvc.perform(put("/submissions")
-                .header("X-Authorization", DUMMY_TOKEN)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(submissionJson("differentuserid")))
-                .andExpect(status().isUnauthorized)
-    }
-
-    @Test
-    fun returns_401_when_user_is_unidentified_for_put_submissions() {
-        given(usersClient.findUser(DUMMY_TOKEN)).willReturn(null)
-
-        mockMvc.perform(put("/submissions")
-                .header("X-Authorization", DUMMY_TOKEN)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(submissionJson(USER.id)))
-                .andExpect(status().isUnauthorized)
-    }
-
-    @Test
-    fun returns_200_and_newly_added_submission_for_put_submissions() {
-        given(usersClient.findUser(DUMMY_TOKEN)).willReturn(USER)
-
-        given(submissionRepository.addOrUpdate(submission(USER.id))).willReturn(
-                submission(USER.id, "0-1")
-        )
-
-        mockMvc.perform(put("/submissions")
-                .header("X-Authorization", DUMMY_TOKEN)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(submissionJson(USER.id)))
-                .andExpect(status().isCreated)
-                .andExpect(jsonPath("$.id", `is`("0-1")))
-    }
-
-    @Test
-    fun returns_200_and_re_added_submission_for_put_submissions_if_user_is_admin() {
-        given(usersClient.findUser(DUMMY_TOKEN)).willReturn(ADMIN)
-
-        given(submissionRepository.addOrUpdate(submission(USER.id))).willReturn(
-                submission(USER.id, "0-1")
-        )
-
-        mockMvc.perform(put("/submissions")
-                .header("X-Authorization", DUMMY_TOKEN)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(submissionJson(USER.id)))
-                .andExpect(status().isCreated)
-                .andExpect(jsonPath("$.id", `is`("0-1")))
-    }
-
-    @Test
     fun returns_401_if_user_is_not_authorized_for_delete_submission_request() {
         mockMvc.perform(delete("/submissions/0-0")
                 .accept(MediaType.APPLICATION_JSON))
@@ -261,7 +199,19 @@ class SubmissionsControllerSpec {
             submissionForProblem("fib", userId, id)
 
     private fun submissionForProblem(problemId: String, userId: String, id: String? = null) =
-            Submission(problemId, 0.5, "class Solution", "ACCEPTED", userId, "java", id)
+            SubmissionResult(
+                    problemId,
+                    0.5,
+                    "class Solution",
+                    "ACCEPTED", userId,
+                    "java",
+                    "2",
+                    10L,
+                    null,
+                    emptyList(),
+                    null,
+                    id
+            )
 
     private fun submissionJson(userId: String) = """{
   "problemId": "fib",
