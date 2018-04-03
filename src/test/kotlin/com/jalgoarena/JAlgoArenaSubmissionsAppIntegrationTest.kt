@@ -12,10 +12,12 @@ import org.springframework.boot.test.web.client.TestRestTemplate
 import org.springframework.test.context.junit4.SpringRunner
 import javax.inject.Inject
 import org.springframework.boot.test.mock.mockito.MockBean
+import org.springframework.kafka.test.context.EmbeddedKafka
 import org.springframework.kafka.test.rule.KafkaEmbedded
 
 @RunWith(SpringRunner::class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+@EmbeddedKafka(partitions = 1, topics = ["results", "submissions"])
 class JAlgoArenaSubmissionsAppIntegrationTest {
     @Inject
     private lateinit var restTemplate: TestRestTemplate
@@ -30,11 +32,5 @@ class JAlgoArenaSubmissionsAppIntegrationTest {
     fun check_if_spring_configuration_works_properly() {
         val body = this.restTemplate.getForObject("/info", String::class.java)
         assertThat(body).isEqualTo("{}")
-    }
-
-    companion object {
-        @ClassRule
-        @JvmField
-        var embeddedKafka = KafkaEmbedded(1, true, "results", "submissions")
     }
 }
