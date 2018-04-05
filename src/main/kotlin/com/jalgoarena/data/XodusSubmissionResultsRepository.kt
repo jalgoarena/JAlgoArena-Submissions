@@ -7,7 +7,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Repository
 
 @Repository
-class XodusSubmissionResultsRepository(db: Db) : SubmissionResultsRepository {
+open class XodusSubmissionResultsRepository(db: Db) : SubmissionResultsRepository {
     private val store = db.store
 
     private val logger = LoggerFactory.getLogger(this.javaClass)
