@@ -33,7 +33,10 @@ class BasicRankingCalculator(
     override fun ranking(users: List<User>, submissions: List<Submission>, problems: List<Problem>): List<RankEntry> {
 
         return users.map { user ->
-            val userSubmissions = submissions.filter { it.userId == user.id }
+            val userSubmissions = submissions
+                    .filter { it.userId == user.id }
+                    .sortedBy { it.elapsedTime }
+                    .distinctBy { it.problemId }
             val solvedProblems = userSubmissions.map { it.problemId }
             val numberOfSolutionsPerLanguage = userSubmissions
                     .groupBy { it.language }
@@ -54,7 +57,7 @@ class BasicRankingCalculator(
         val problemSubmissions = findByProblemId(problemId)
 
         return problemSubmissions.map { submission ->
-            val user = users.filter { it.id == submission.userId }.first()
+            val user = users.first { it.id == submission.userId }
 
             ProblemRankEntry(
                     user.username,
@@ -62,7 +65,7 @@ class BasicRankingCalculator(
                     submission.elapsedTime,
                     submission.language
             )
-        }.sortedBy { it.elapsedTime }
+        }.sortedBy { it.elapsedTime }.distinctBy { it.hacker }
     }
 
     private fun score(userSubmissions: List<Submission>, problems: List<Problem>): Double {

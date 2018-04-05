@@ -3,4 +3,4 @@ build/
 .idea
 logs
 SubmissionsStore/
-SubmissionsInProgressStore/
+out

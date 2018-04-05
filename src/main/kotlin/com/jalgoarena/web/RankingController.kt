@@ -19,11 +19,11 @@ class RankingController(
     @GetMapping("/ranking", produces = ["application/json"])
     fun ranking() = rankingCalculator.ranking(
             users = usersClient.findAllUsers().filter { it.username != "admin" },
-            submissions = submissionsRepository.findAll(),
+            submissions = submissionsRepository.findAllAccepted(),
             problems = problemsRepository.findAll()
     )
 
-    @GetMapping("/ranking/{problemId}", produces = arrayOf("application/json"))
+    @GetMapping("/ranking/{problemId}", produces = ["application/json"])
     fun problemRanking(@PathVariable problemId: String) =
             rankingCalculator.problemRanking(
                     problemId = problemId,

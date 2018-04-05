@@ -1,10 +1,8 @@
 package com.jalgoarena.web
 
-import com.jalgoarena.data.ProblemsRepository
 import com.jalgoarena.data.SubmissionsRepository
 import com.jalgoarena.domain.Constants.ADMIN_ROLE
 import com.jalgoarena.domain.User
-import com.jalgoarena.ranking.RankingCalculator
 import com.jalgoarena.ranking.SolvedRatioCalculator
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -14,9 +12,7 @@ import javax.inject.Inject
 
 @RestController
 class SubmissionsController(
-        @Inject private val rankingCalculator: RankingCalculator,
         @Inject private val usersClient: UsersClient,
-        @Inject private val problemsRepository: ProblemsRepository,
         @Inject private val submissionsRepository: SubmissionsRepository
 ) : SolvedRatioCalculator {
 
@@ -46,17 +42,14 @@ class SubmissionsController(
     }
 
     @GetMapping("/submissions/{userId}", produces = ["application/json"])
-    fun userRankingDetails(
+    fun findUserSubmissions(
             @PathVariable userId: String,
             @RequestHeader("X-Authorization", required = false) token: String?
     ) = checkUser(token) { user ->
         when {
             user.id != userId -> unauthorized()
             else -> {
-                val problems = problemsRepository.findAll()
-                val users = usersClient.findAllUsers()
-
-                ok(rankingCalculator.userRankingDetails(user, problems, users))
+                ok(submissionsRepository.findByUserId(user.id))
             }
         }
     }

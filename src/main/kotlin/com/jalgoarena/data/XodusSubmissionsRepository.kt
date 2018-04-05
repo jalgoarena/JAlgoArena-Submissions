@@ -1,6 +1,7 @@
 package com.jalgoarena.data
 
 import com.jalgoarena.domain.Constants
+import com.jalgoarena.domain.Constants.SUBMISSION_ENTITY_TYPE
 import com.jalgoarena.domain.Submission
 import jetbrains.exodus.entitystore.*
 import org.slf4j.LoggerFactory
@@ -13,14 +14,24 @@ open class XodusSubmissionsRepository(db: Db) : SubmissionsRepository {
     private val logger = LoggerFactory.getLogger(this.javaClass)
     override fun findAll(): List<Submission> {
         return readonly {
-            it.getAll(Constants.SUBMISSION_RESULT_ENTITY_TYPE).map { Submission.from(it) }
+            it.getAll(SUBMISSION_ENTITY_TYPE).map { Submission.from(it) }
+        }
+    }
+
+    override fun findAllAccepted(): List<Submission> {
+        return readonly {
+            it.find(
+                    Constants.SUBMISSION_ENTITY_TYPE,
+                    Constants.statusCode,
+                    Constants.ACCEPTED
+            ).map { Submission.from(it) }
         }
     }
 
     override fun findByUserId(userId: String): List<Submission> {
         return readonly {
             it.find(
-                    Constants.SUBMISSION_RESULT_ENTITY_TYPE,
+                    SUBMISSION_ENTITY_TYPE,
                     Constants.userId,
                     userId
             ).map { Submission.from(it) }
@@ -30,7 +41,7 @@ open class XodusSubmissionsRepository(db: Db) : SubmissionsRepository {
     override fun findBySubmissionId(submissionId: String): Submission {
         return readonly {
             val submissionResult = it.find(
-                    Constants.SUBMISSION_RESULT_ENTITY_TYPE,
+                    SUBMISSION_ENTITY_TYPE,
                     Constants.submissionId,
                     submissionId
             ).firstOrNull()
@@ -57,7 +68,7 @@ open class XodusSubmissionsRepository(db: Db) : SubmissionsRepository {
     override fun findByProblemId(problemId: String): List<Submission> {
         return readonly {
             it.find(
-                    Constants.SUBMISSION_RESULT_ENTITY_TYPE,
+                    SUBMISSION_ENTITY_TYPE,
                     Constants.problemId,
                     problemId
             ).map { Submission.from(it) }
@@ -67,12 +78,12 @@ open class XodusSubmissionsRepository(db: Db) : SubmissionsRepository {
     override fun addOrUpdate(submission: Submission): Submission {
         return transactional {
 
-            val existingEntity = it.find(Constants.SUBMISSION_RESULT_ENTITY_TYPE, Constants.userId, submission.userId).intersect(
-                    it.find(Constants.SUBMISSION_RESULT_ENTITY_TYPE, Constants.problemId, submission.problemId)
+            val existingEntity = it.find(Constants.SUBMISSION_ENTITY_TYPE, Constants.userId, submission.userId).intersect(
+                    it.find(Constants.SUBMISSION_ENTITY_TYPE, Constants.problemId, submission.problemId)
             ).firstOrNull()
 
             val entity = when (existingEntity) {
-                null -> it.newEntity(Constants.SUBMISSION_RESULT_ENTITY_TYPE)
+                null -> it.newEntity(Constants.SUBMISSION_ENTITY_TYPE)
                 else -> existingEntity
             }
 
