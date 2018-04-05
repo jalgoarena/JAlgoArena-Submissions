@@ -10,4 +10,6 @@ interface SubmissionsRepository {
     fun addOrUpdate(submission: Submission): Submission
     fun delete(id: String): List<Submission>
     fun destroy()
+    fun findBySubmissionId(submissionId: String): Submission
 }
+

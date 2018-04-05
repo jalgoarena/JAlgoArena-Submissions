@@ -1,7 +1,7 @@
 package com.jalgoarena.web
 
 import com.jalgoarena.data.ProblemsRepository
-import com.jalgoarena.data.SubmissionResultsRepository
+import com.jalgoarena.data.SubmissionsRepository
 import com.jalgoarena.ranking.RankingCalculator
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -13,13 +13,13 @@ class RankingController(
         @Inject private val rankingCalculator: RankingCalculator,
         @Inject private val usersClient: UsersClient,
         @Inject private val problemsRepository: ProblemsRepository,
-        @Inject private val submissionResultsRepository: SubmissionResultsRepository
+        @Inject private val submissionsRepository: SubmissionsRepository
 ) {
 
     @GetMapping("/ranking", produces = ["application/json"])
     fun ranking() = rankingCalculator.ranking(
             users = usersClient.findAllUsers().filter { it.username != "admin" },
-            submissionResults = submissionResultsRepository.findAll(),
+            submissions = submissionsRepository.findAll(),
             problems = problemsRepository.findAll()
     )
 

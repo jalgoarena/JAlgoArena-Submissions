@@ -1,7 +1,7 @@
 package com.jalgoarena.ranking
 
 import com.jalgoarena.domain.Problem
-import com.jalgoarena.domain.SubmissionResult
+import com.jalgoarena.domain.Submission
 import junitparams.JUnitParamsRunner
 import junitparams.Parameters
 import org.assertj.core.api.Assertions.assertThat
@@ -51,14 +51,14 @@ class BasicScoreCalculatorSpec {
     }
 
     private fun submission(elapsedTime: Double) =
-            SubmissionResult(
+            Submission(
                     "fib",
-                    elapsedTime,
                     DUMMY_SOURCE_CODE,
                     STATUS_ACCEPTED,
                     "0-0",
                     "java",
                     "2",
+                    elapsedTime,
                     10L,
                     null,
                     emptyList(),

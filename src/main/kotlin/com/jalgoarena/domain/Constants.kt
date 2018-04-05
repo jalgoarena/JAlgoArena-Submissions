@@ -15,7 +15,7 @@ object Constants {
     const val testcaseResults = "testcaseResults"
     const val storePathSubmissions = "./SubmissionsStore"
     const val SUBMISSION_ENTITY_TYPE = "Submission"
-    const val SUBMISSION_RESULT_ENTITY_TYPE = "SubmissionResult"
+    const val SUBMISSION_RESULT_ENTITY_TYPE = "Submission"
     const val ADMIN_ROLE = "ADMIN"
     const val DONE = "DONE"
     const val IN_PROGRESS = "IN PROGRESS"

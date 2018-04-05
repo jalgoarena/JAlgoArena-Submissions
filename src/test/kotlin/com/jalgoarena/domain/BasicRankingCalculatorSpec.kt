@@ -1,7 +1,7 @@
 package com.jalgoarena.domain
 
 import com.jalgoarena.data.ProblemsRepository
-import com.jalgoarena.data.SubmissionResultsRepository
+import com.jalgoarena.data.SubmissionsRepository
 import com.jalgoarena.ranking.BasicRankingCalculator
 import com.jalgoarena.ranking.BasicScoreCalculator
 import org.assertj.core.api.Assertions.assertThat
@@ -12,31 +12,31 @@ import org.mockito.Mockito.mock
 
 class BasicRankingCalculatorSpec {
 
-    private lateinit var submissionResultsRepository: SubmissionResultsRepository
+    private lateinit var submissionsRepository: SubmissionsRepository
     private lateinit var problemsRepository: ProblemsRepository
 
     @Before
     fun setUp() {
-        submissionResultsRepository = mock(SubmissionResultsRepository::class.java)
+        submissionsRepository = mock(SubmissionsRepository::class.java)
         problemsRepository = mock(ProblemsRepository::class.java)
     }
 
     @Test
     fun returns_empty_ranking_if_no_users() {
-        given(submissionResultsRepository.findAll()).willReturn(emptyList())
+        given(submissionsRepository.findAll()).willReturn(emptyList())
 
-        val rankingCalculator = basicRankingCalculator(submissionResultsRepository)
+        val rankingCalculator = basicRankingCalculator(submissionsRepository)
 
-        assertThat(rankingCalculator.ranking(emptyList(), submissionResultsRepository.findAll(), problemsRepository.findAll())).isEqualTo(emptyList<RankEntry>())
+        assertThat(rankingCalculator.ranking(emptyList(), submissionsRepository.findAll(), problemsRepository.findAll())).isEqualTo(emptyList<RankEntry>())
     }
 
     @Test
     fun returns_all_users_with_0_score_if_no_submissions() {
-        given(submissionResultsRepository.findAll()).willReturn(emptyList())
+        given(submissionsRepository.findAll()).willReturn(emptyList())
 
-        val rankingCalculator = basicRankingCalculator(submissionResultsRepository)
+        val rankingCalculator = basicRankingCalculator(submissionsRepository)
 
-        assertThat(rankingCalculator.ranking(USERS, submissionResultsRepository.findAll(), problemsRepository.findAll())).isEqualTo(listOf(
+        assertThat(rankingCalculator.ranking(USERS, submissionsRepository.findAll(), problemsRepository.findAll())).isEqualTo(listOf(
                 RankEntry("mikołaj", 0.0, emptyList(), "Kraków", "Tyniec Team", emptyList()),
                 RankEntry("julia", 0.0, emptyList(), "Kraków", "Tyniec Team", emptyList()),
                 RankEntry("joe", 0.0, emptyList(), "London", "London Team", emptyList()),
@@ -52,7 +52,7 @@ class BasicRankingCalculatorSpec {
                 Problem("word-ladder", 3, 1)
         ))
 
-        given(submissionResultsRepository.findAll()).willReturn(listOf(
+        given(submissionsRepository.findAll()).willReturn(listOf(
                 submission("fib", 0.01, USER_MIKOLAJ.id),
                 submission("fib", 0.011, USER_JULIA.id),
                 submission("2-sum", 0.01, USER_JOE.id),
@@ -61,9 +61,9 @@ class BasicRankingCalculatorSpec {
                 submission("word-ladder", 0.011, USER_JULIA.id)
         ))
 
-        val rankingCalculator = basicRankingCalculator(submissionResultsRepository)
+        val rankingCalculator = basicRankingCalculator(submissionsRepository)
 
-        assertThat(rankingCalculator.ranking(USERS, submissionResultsRepository.findAll(), problemsRepository.findAll())).isEqualTo(listOf(
+        assertThat(rankingCalculator.ranking(USERS, submissionsRepository.findAll(), problemsRepository.findAll())).isEqualTo(listOf(
                 RankEntry("mikołaj", 60.0, listOf("fib", "word-ladder"), "Kraków", "Tyniec Team", listOf(Pair("java", 2))),
                 RankEntry("julia", 60.0, listOf("fib", "word-ladder"), "Kraków", "Tyniec Team", listOf(Pair("java", 2))),
                 RankEntry("joe", 30.0, listOf("2-sum"), "London", "London Team", listOf(Pair("java", 1))),
@@ -73,9 +73,9 @@ class BasicRankingCalculatorSpec {
 
     @Test
     fun returns_empty_problem_ranking_when_no_submissions_for_problem() {
-        given(submissionResultsRepository.findByProblemId("fib")).willReturn(emptyList())
+        given(submissionsRepository.findByProblemId("fib")).willReturn(emptyList())
 
-        val rankingCalculator = basicRankingCalculator(submissionResultsRepository)
+        val rankingCalculator = basicRankingCalculator(submissionsRepository)
 
         assertThat(rankingCalculator.problemRanking("fib", USERS, problemsRepository.findAll()))
                 .isEqualTo(emptyList<ProblemRankEntry>())
@@ -87,14 +87,14 @@ class BasicRankingCalculatorSpec {
                 Problem("fib", 1, 1)
         ))
 
-        given(submissionResultsRepository.findByProblemId("fib")).willReturn(listOf(
+        given(submissionsRepository.findByProblemId("fib")).willReturn(listOf(
                 submission("fib", 0.01, USER_MIKOLAJ.id),
                 submission("fib", 0.0001, USER_JULIA.id),
                 submission("fib", 0.001, USER_JOE.id),
                 submission("fib", 0.1, USER_TOM.id)
         ))
 
-        val rankingCalculator = basicRankingCalculator(submissionResultsRepository)
+        val rankingCalculator = basicRankingCalculator(submissionsRepository)
 
         assertThat(rankingCalculator.problemRanking("fib", USERS, problemsRepository.findAll())).isEqualTo(listOf(
                 ProblemRankEntry("julia", 10.0, 0.0001, "java"),
@@ -104,18 +104,18 @@ class BasicRankingCalculatorSpec {
         ))
     }
 
-    private fun basicRankingCalculator(repository: SubmissionResultsRepository) =
+    private fun basicRankingCalculator(repository: SubmissionsRepository) =
             BasicRankingCalculator(repository, BasicScoreCalculator())
 
     private fun submission(problemId: String, elapsedTime: Double, userId: String) =
-            SubmissionResult(
+            Submission(
                     problemId,
-                    elapsedTime,
                     DUMMY_SOURCE_CODE,
                     STATUS_ACCEPTED,
                     userId,
                     "java",
                     "2",
+                    elapsedTime,
                     10L,
                     null,
                     emptyList(),

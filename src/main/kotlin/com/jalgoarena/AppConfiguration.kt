@@ -1,6 +1,6 @@
 package com.jalgoarena
 
-import com.jalgoarena.data.SubmissionResultsRepository
+import com.jalgoarena.data.SubmissionsRepository
 import com.jalgoarena.ranking.*
 import com.jalgoarena.web.ProblemsClient
 import org.springframework.context.annotation.Bean
@@ -12,12 +12,12 @@ import org.springframework.web.client.RestTemplate
 open class AppConfiguration {
 
     @Bean
-    open fun rankingCalculator(submissionResultsRepository : SubmissionResultsRepository, problemsClient: ProblemsClient): RankingCalculator {
+    open fun rankingCalculator(submissionsRepository : SubmissionsRepository, problemsClient: ProblemsClient): RankingCalculator {
         val scoreCalculator = BasicScoreCalculator()
-        val rankingCalculator = BasicRankingCalculator(submissionResultsRepository, scoreCalculator)
+        val rankingCalculator = BasicRankingCalculator(submissionsRepository, scoreCalculator)
 
         return BonusPointsForBestTimeRankingCalculator(
-                submissionResultsRepository, rankingCalculator
+                submissionsRepository, rankingCalculator
         )
     }
 

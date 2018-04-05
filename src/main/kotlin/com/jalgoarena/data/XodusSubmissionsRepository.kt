@@ -8,23 +8,38 @@ import org.springframework.stereotype.Repository
 
 @Repository
 open class XodusSubmissionsRepository(db: Db) : SubmissionsRepository {
-
     private val store = db.store
-    private val logger = LoggerFactory.getLogger(this.javaClass)
 
+    private val logger = LoggerFactory.getLogger(this.javaClass)
     override fun findAll(): List<Submission> {
         return readonly {
-            it.getAll(Constants.SUBMISSION_ENTITY_TYPE).map { Submission.from(it) }
+            it.getAll(Constants.SUBMISSION_RESULT_ENTITY_TYPE).map { Submission.from(it) }
         }
     }
 
     override fun findByUserId(userId: String): List<Submission> {
         return readonly {
             it.find(
-                    Constants.SUBMISSION_ENTITY_TYPE,
+                    Constants.SUBMISSION_RESULT_ENTITY_TYPE,
                     Constants.userId,
                     userId
             ).map { Submission.from(it) }
+        }
+    }
+
+    override fun findBySubmissionId(submissionId: String): Submission {
+        return readonly {
+            val submissionResult = it.find(
+                    Constants.SUBMISSION_RESULT_ENTITY_TYPE,
+                    Constants.submissionId,
+                    submissionId
+            ).firstOrNull()
+
+            if (submissionResult == null) {
+                Submission.notFound(submissionId)
+            } else {
+                Submission.from(submissionResult)
+            }
         }
     }
 
@@ -42,7 +57,7 @@ open class XodusSubmissionsRepository(db: Db) : SubmissionsRepository {
     override fun findByProblemId(problemId: String): List<Submission> {
         return readonly {
             it.find(
-                    Constants.SUBMISSION_ENTITY_TYPE,
+                    Constants.SUBMISSION_RESULT_ENTITY_TYPE,
                     Constants.problemId,
                     problemId
             ).map { Submission.from(it) }
@@ -52,12 +67,12 @@ open class XodusSubmissionsRepository(db: Db) : SubmissionsRepository {
     override fun addOrUpdate(submission: Submission): Submission {
         return transactional {
 
-            val existingEntity = it.find(Constants.SUBMISSION_ENTITY_TYPE, Constants.userId, submission.userId).intersect(
-                    it.find(Constants.SUBMISSION_ENTITY_TYPE, Constants.problemId, submission.problemId)
+            val existingEntity = it.find(Constants.SUBMISSION_RESULT_ENTITY_TYPE, Constants.userId, submission.userId).intersect(
+                    it.find(Constants.SUBMISSION_RESULT_ENTITY_TYPE, Constants.problemId, submission.problemId)
             ).firstOrNull()
 
             val entity = when (existingEntity) {
-                null -> it.newEntity(Constants.SUBMISSION_ENTITY_TYPE)
+                null -> it.newEntity(Constants.SUBMISSION_RESULT_ENTITY_TYPE)
                 else -> existingEntity
             }
 
@@ -67,12 +82,16 @@ open class XodusSubmissionsRepository(db: Db) : SubmissionsRepository {
 
     private fun updateEntity(entity: Entity, submission: Submission): Submission {
         entity.apply {
+            setProperty(Constants.problemId, submission.problemId)
+            setProperty(Constants.elapsedTime, submission.elapsedTime)
             setProperty(Constants.sourceCode, submission.sourceCode)
+            setProperty(Constants.statusCode, submission.statusCode)
             setProperty(Constants.userId, submission.userId)
             setProperty(Constants.language, submission.language)
             setProperty(Constants.submissionId, submission.submissionId)
-            setProperty(Constants.problemId, submission.problemId)
-            setProperty(Constants.state, submission.state ?: Constants.IN_PROGRESS)
+            setProperty(Constants.consumedMemory, submission.consumedMemory)
+            setProperty(Constants.errorMessage, submission.errorMessage ?: "")
+            setProperty(Constants.testcaseResults, submission.testcaseResults!!.joinToString(";"))
         }
 
         return Submission.from(entity)

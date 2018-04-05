@@ -1,27 +1,27 @@
 package com.jalgoarena.data
 
-import com.jalgoarena.domain.SubmissionResult
+import com.jalgoarena.domain.Submission
 import jetbrains.exodus.entitystore.PersistentEntityStores
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.AfterClass
 import org.junit.Test
 import java.io.File
 
-class SubmissionResultsRepositorySpec {
+class SubmissionsRepositorySpec {
 
     companion object {
 
-        val testDbName = "./SubmissionsStoreForTest"
-        val REPOSITORY: SubmissionResultsRepository
+        private const val TEST_DB_NAME = "./SubmissionsStoreForTest"
+        val REPOSITORY: SubmissionsRepository
         init {
-            PersistentEntityStores.newInstance(testDbName).close()
-            REPOSITORY = XodusSubmissionResultsRepository(XodusDb(testDbName))
+            PersistentEntityStores.newInstance(TEST_DB_NAME).close()
+            REPOSITORY = XodusSubmissionsRepository(XodusDb(TEST_DB_NAME))
         }
 
         @AfterClass
         @JvmStatic fun tearDown() {
             REPOSITORY.destroy()
-            File(testDbName).deleteRecursively()
+            File(TEST_DB_NAME).deleteRecursively()
         }
 
     }
@@ -101,18 +101,17 @@ class SubmissionResultsRepositorySpec {
     }
 
     private fun submission(problemId: String, userId: String, language: String) =
-            SubmissionResult(
+            Submission(
                     problemId,
-                    0.5,
                     "class Solution",
                     "ACCEPTED",
                     userId,
                     language,
                     "1",
+                    0.5,
                     10L,
                     null,
-                    emptyList(),
-                    null
+                    emptyList()
             )
 
     private val user1 = "User#1"

@@ -1,10 +1,10 @@
 package com.jalgoarena.ranking
 
-import com.jalgoarena.data.SubmissionResultsRepository
+import com.jalgoarena.data.SubmissionsRepository
 import com.jalgoarena.domain.*
 
 class BonusPointsForBestTimeRankingCalculator(
-        private val submissionResultsRepository: SubmissionResultsRepository,
+        private val submissionsRepository: SubmissionsRepository,
         private val rankingCalculator: RankingCalculator
 ) : RankingCalculator {
     override fun userRankingDetails(
@@ -35,11 +35,11 @@ class BonusPointsForBestTimeRankingCalculator(
         }
     }
 
-    override fun ranking(users: List<User>, submissionResults: List<SubmissionResult>, problems: List<Problem>): List<RankEntry> {
+    override fun ranking(users: List<User>, submissions: List<Submission>, problems: List<Problem>): List<RankEntry> {
 
-        val bonusPoints = calculateBonusPointsForFastestSolutions(submissionResults, users)
+        val bonusPoints = calculateBonusPointsForFastestSolutions(submissions, users)
 
-        return rankingCalculator.ranking(users, submissionResults, problems).map { rankEntry ->
+        return rankingCalculator.ranking(users, submissions, problems).map { rankEntry ->
             val id = users.first { it.username == rankEntry.hacker }.id
 
             RankEntry(
@@ -54,7 +54,7 @@ class BonusPointsForBestTimeRankingCalculator(
     }
 
     override fun problemRanking(problemId: String, users: List<User>, problems: List<Problem>): List<ProblemRankEntry> {
-        val problemSubmissions = submissionResultsRepository.findByProblemId(problemId)
+        val problemSubmissions = submissionsRepository.findByProblemId(problemId)
 
         val bonusPoints = calculateBonusPointsForFastestSolutions(problemSubmissions, users)
 
@@ -70,15 +70,15 @@ class BonusPointsForBestTimeRankingCalculator(
         }.sortedBy { it.elapsedTime }
     }
 
-    private fun calculateBonusPointsForFastestSolutions(submissionResults: List<SubmissionResult>, users: List<User>): Map<String, Double> {
+    private fun calculateBonusPointsForFastestSolutions(submissions: List<Submission>, users: List<User>): Map<String, Double> {
 
         val bonusPoints = mutableMapOf<String, Double>()
         users.forEach { bonusPoints[it.id] = 0.0 }
 
-        val problems = submissionResults.map { it.problemId }.distinct()
+        val problems = submissions.map { it.problemId }.distinct()
 
         problems.forEach { problem ->
-            val problemSubmissions = submissionResults.filter { it.problemId == problem }
+            val problemSubmissions = submissions.filter { it.problemId == problem }
             val fastestSubmission = problemSubmissions.minBy { it.elapsedTime }
 
             if (fastestSubmission != null && bonusPoints[fastestSubmission.userId] != null) {

@@ -1,14 +1,14 @@
 package com.jalgoarena.ranking
 
-import com.jalgoarena.data.SubmissionResultsRepository
+import com.jalgoarena.data.SubmissionsRepository
 import com.jalgoarena.domain.*
 
 class BasicRankingCalculator(
-        submissionResultsRepository: SubmissionResultsRepository,
+        submissionsRepository: SubmissionsRepository,
         scoreCalculator: ScoreCalculator
 ) : RankingCalculator,
         ScoreCalculator by scoreCalculator,
-        SubmissionResultsRepository by submissionResultsRepository {
+        SubmissionsRepository by submissionsRepository {
 
     override fun userRankingDetails(
             user: User,
@@ -30,10 +30,10 @@ class BasicRankingCalculator(
         )
     }
 
-    override fun ranking(users: List<User>, submissionResults: List<SubmissionResult>, problems: List<Problem>): List<RankEntry> {
+    override fun ranking(users: List<User>, submissions: List<Submission>, problems: List<Problem>): List<RankEntry> {
 
         return users.map { user ->
-            val userSubmissions = submissionResults.filter { it.userId == user.id }
+            val userSubmissions = submissions.filter { it.userId == user.id }
             val solvedProblems = userSubmissions.map { it.problemId }
             val numberOfSolutionsPerLanguage = userSubmissions
                     .groupBy { it.language }
@@ -65,7 +65,7 @@ class BasicRankingCalculator(
         }.sortedBy { it.elapsedTime }
     }
 
-    private fun score(userSubmissions: List<SubmissionResult>, problems: List<Problem>): Double {
+    private fun score(userSubmissions: List<Submission>, problems: List<Problem>): Double {
         return userSubmissions.sumByDouble { userSubmission ->
             val problem = problems.first { it.id == userSubmission.problemId }
             calculate(userSubmission, problem)

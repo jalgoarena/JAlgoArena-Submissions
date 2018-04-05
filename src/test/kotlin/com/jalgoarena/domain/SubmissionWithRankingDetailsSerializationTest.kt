@@ -1,15 +1,14 @@
 package com.jalgoarena.domain
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions
 import org.intellij.lang.annotations.Language
 import org.junit.Before
 import org.junit.Test
 import org.springframework.boot.test.json.JacksonTester
 
-class SubmissionResultSerializationTest {
-
-    private lateinit var json: JacksonTester<SubmissionResult>
+class SubmissionWithRankingDetailsSerializationTest {
+    private lateinit var json: JacksonTester<SubmissionWithRankingDetails>
 
     @Before
     fun setup() {
@@ -19,43 +18,39 @@ class SubmissionResultSerializationTest {
 
     @Test
     fun should_serialize_submission() {
-        assertThat(json.write(SUBMISSION))
-                .isEqualToJson("submission-result.json")
+        Assertions.assertThat(json.write(SUBMISSION_WITH_RANKING_DETAILS))
+                .isEqualToJson("submission-with-ranking-details.json")
     }
 
     @Test
     fun should_deserialize_submission() {
-        assertThat(json.parse(SUBMISSION_JSON))
-                .isEqualTo(SUBMISSION)
+        Assertions.assertThat(json.parse(SUBMISSION_WITH_RANKING_DETAILS_JSON))
+                .isEqualTo(SUBMISSION_WITH_RANKING_DETAILS)
     }
 
-    private val SUBMISSION = SubmissionResult(
+    private val SUBMISSION_WITH_RANKING_DETAILS = SubmissionWithRankingDetails(
             problemId = "fib",
             elapsedTime = 435.212,
             sourceCode = "dummy source code",
             statusCode = "ACCEPTED",
-            userId = "0-0",
             language = "kotlin",
             id = "2-4",
-            submissionId = "2",
-            consumedMemory = 10L,
-            errorMessage = null,
-            testcaseResults = emptyList(),
-            token = null
+            problemRankPlace = 2,
+            level = 1,
+            score = 15.0
     )
 
     @Language("JSON")
-    private val  SUBMISSION_JSON = """{
+    private val SUBMISSION_WITH_RANKING_DETAILS_JSON = """{
   "problemId": "fib",
   "elapsedTime": 435.212,
   "sourceCode": "dummy source code",
   "statusCode": "ACCEPTED",
-  "userId": "0-0",
   "language": "kotlin",
   "id": "2-4",
-  "submissionId": "2",
-  "consumedMemory": 10,
-  "testcaseResults": []
+  "problemRankPlace": 2,
+  "level": 1,
+  "score": 15.0
 }
 """
 }

@@ -1,7 +1,7 @@
 package com.jalgoarena.web
 
 import com.jalgoarena.data.ProblemsRepository
-import com.jalgoarena.data.SubmissionResultsRepository
+import com.jalgoarena.data.SubmissionsRepository
 import com.jalgoarena.domain.Constants.ADMIN_ROLE
 import com.jalgoarena.domain.User
 import com.jalgoarena.ranking.RankingCalculator
@@ -17,7 +17,7 @@ class SubmissionsController(
         @Inject private val rankingCalculator: RankingCalculator,
         @Inject private val usersClient: UsersClient,
         @Inject private val problemsRepository: ProblemsRepository,
-        @Inject private val submissionResultsRepository: SubmissionResultsRepository
+        @Inject private val submissionsRepository: SubmissionsRepository
 ) : SolvedRatioCalculator {
 
 
@@ -27,12 +27,12 @@ class SubmissionsController(
     ) = checkUser(token) { user ->
         when {
             ADMIN_ROLE != user.role -> unauthorized()
-            else -> ok(submissionResultsRepository.findAll())
+            else -> ok(submissionsRepository.findAll())
         }
     }
 
     @GetMapping("/submissions/solved-ratio", produces = ["application/json"])
-    fun submissionsSolvedRatio() = calculateSubmissionsSolvedRatioAndReturnIt(submissionResultsRepository.findAll())
+    fun submissionsSolvedRatio() = calculateSubmissionsSolvedRatioAndReturnIt(submissionsRepository.findAll())
 
     @DeleteMapping("/submissions/{submissionId}", produces = ["application/json"])
     fun deleteSubmission(
@@ -41,7 +41,7 @@ class SubmissionsController(
     ) = checkUser(token) { user ->
         when {
             ADMIN_ROLE != user.role -> unauthorized()
-            else -> ok(submissionResultsRepository.delete(submissionId))
+            else -> ok(submissionsRepository.delete(submissionId))
         }
     }
 
@@ -70,7 +70,7 @@ class SubmissionsController(
         when {
             user.id != userId -> unauthorized()
             else -> {
-                ok(submissionResultsRepository.findBySubmissionId(submissionId))
+                ok(submissionsRepository.findBySubmissionId(submissionId))
             }
         }
     }
