@@ -99,6 +99,7 @@ open class XodusSubmissionsRepository(db: Db) : SubmissionsRepository {
             setProperty(Constants.userId, submission.userId)
             setProperty(Constants.language, submission.language)
             setProperty(Constants.submissionId, submission.submissionId)
+            setProperty(Constants.submissionTime, submission.submissionTime)
             setProperty(Constants.consumedMemory, submission.consumedMemory)
             setProperty(Constants.errorMessage, submission.errorMessage ?: "")
             setProperty(Constants.passedTestCases, submission.passedTestCases ?: 0)

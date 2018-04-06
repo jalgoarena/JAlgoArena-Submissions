@@ -7,6 +7,7 @@ import junitparams.Parameters
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.junit.runner.RunWith
+import java.time.LocalDateTime
 
 @RunWith(JUnitParamsRunner::class)
 class BasicScoreCalculatorSpec {
@@ -58,13 +59,17 @@ class BasicScoreCalculatorSpec {
                     "0-0",
                     "java",
                     "2",
+                    LocalDateTime.now().toString(),
                     elapsedTime,
                     10L,
                     null,
-                    emptyList(),
+                    1,
+                    0,
                     null
             )
 
-    private val DUMMY_SOURCE_CODE = "dummy source code"
-    private val STATUS_ACCEPTED = "ACCEPTED"
+    companion object {
+        private const val DUMMY_SOURCE_CODE = "dummy source code"
+        private const val STATUS_ACCEPTED = "ACCEPTED"
+    }
 }

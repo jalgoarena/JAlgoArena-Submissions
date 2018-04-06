@@ -2,6 +2,7 @@ package com.jalgoarena.domain
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import jetbrains.exodus.entitystore.Entity
+import java.time.LocalDateTime
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class Submission(
@@ -11,6 +12,7 @@ data class Submission(
         val userId: String,
         val language: String,
         val submissionId: String,
+        val submissionTime: String,
         val elapsedTime: Double,
         val consumedMemory: Long,
         val errorMessage: String?,
@@ -29,6 +31,7 @@ data class Submission(
                     entity.getProperty(Constants.userId) as String,
                     entity.getProperty(Constants.language) as String,
                     entity.getProperty(Constants.submissionId) as String,
+                    entity.getProperty(Constants.submissionTime) as String,
                     entity.getProperty(Constants.elapsedTime) as Double,
                     entity.getProperty(Constants.consumedMemory) as Long,
                     entity.getProperty(Constants.errorMessage) as String?,
@@ -46,7 +49,8 @@ data class Submission(
                     "",
                     "",
                     submissionId,
-                    0.0,
+                    LocalDateTime.now().toString(),
+                    -1.0,
                     0L,
                     "Couldn't find submission",
                     0,

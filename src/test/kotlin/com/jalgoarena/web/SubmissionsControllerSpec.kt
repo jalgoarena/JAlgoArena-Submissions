@@ -20,6 +20,7 @@ import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
+import java.time.LocalDateTime
 import javax.inject.Inject
 
 @RunWith(SpringRunner::class)
@@ -205,22 +206,13 @@ class SubmissionsControllerSpec {
                     "ACCEPTED", userId,
                     "java",
                     "2",
+                    LocalDateTime.now().toString(),
                     0.5,
                     10L,
                     null,
-                    emptyList(),
+                    1,
+                    0,
                     null,
                     id
             )
-
-    private fun submissionJson(userId: String) = """{
-  "problemId": "fib",
-  "level": 1,
-  "elapsedTime": 0.5,
-  "sourceCode": "class Solution",
-  "statusCode": "ACCEPTED",
-  "userId": "$userId",
-  "language": "java"
-}
-"""
 }

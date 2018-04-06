@@ -9,6 +9,7 @@ object Constants {
     const val userId = "userId"
     const val language = "language"
     const val submissionId = "submissionId"
+    const val submissionTime = "submissionTime"
     const val consumedMemory = "consumedMemory"
     const val errorMessage = "errorMessage"
     const val passedTestCases = "passedTestCases"

@@ -9,6 +9,7 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.BDDMockito.given
 import org.mockito.Mockito.mock
+import java.time.LocalDateTime
 
 class BasicRankingCalculatorSpec {
 
@@ -115,20 +116,23 @@ class BasicRankingCalculatorSpec {
                     userId,
                     "java",
                     "2",
+                    LocalDateTime.now().toString(),
                     elapsedTime,
                     10L,
                     null,
-                    emptyList(),
-                    null
+                    1,
+                    0
             )
 
-    private val USER_MIKOLAJ = User("mikołaj", "Kraków", "Tyniec Team", "USER", "0-0")
-    private val USER_JULIA = User("julia", "Kraków", "Tyniec Team", "USER", "0-1")
-    private val USER_JOE = User("joe", "London", "London Team", "USER", "0-2")
-    private val USER_TOM = User("tom", "London", "London Team", "USER", "0-3")
+    companion object {
+        private val USER_MIKOLAJ = User("mikołaj", "Kraków", "Tyniec Team", "USER", "0-0")
+        private val USER_JULIA = User("julia", "Kraków", "Tyniec Team", "USER", "0-1")
+        private val USER_JOE = User("joe", "London", "London Team", "USER", "0-2")
+        private val USER_TOM = User("tom", "London", "London Team", "USER", "0-3")
 
-    private val USERS = listOf(USER_MIKOLAJ, USER_JULIA, USER_JOE, USER_TOM)
+        private val USERS = listOf(USER_MIKOLAJ, USER_JULIA, USER_JOE, USER_TOM)
 
-    private val DUMMY_SOURCE_CODE = "dummy source code"
-    private val STATUS_ACCEPTED = "ACCEPTED"
+        private const val DUMMY_SOURCE_CODE = "dummy source code"
+        private const val STATUS_ACCEPTED = "ACCEPTED"
+    }
 }

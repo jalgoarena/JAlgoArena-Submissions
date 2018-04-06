@@ -37,6 +37,7 @@ class SubmissionSerializationTest {
                 SUBMISSION.userId,
                 SUBMISSION.language,
                 SUBMISSION.submissionId,
+                SUBMISSION.submissionTime,
                 SUBMISSION.problemId,
                 SUBMISSION.token,
                 "WAITING"
@@ -48,23 +49,26 @@ class SubmissionSerializationTest {
         assertThat(submission.statusCode).isEqualTo("WAITING")
     }
 
-    private val SUBMISSION = Submission(
-            problemId = "fib",
-            elapsedTime = 435.212,
-            sourceCode = "dummy source code",
-            statusCode = "ACCEPTED",
-            userId = "0-0",
-            language = "kotlin",
-            id = "2-4",
-            submissionId = "2",
-            consumedMemory = 10L,
-            errorMessage = null,
-            testcaseResults = emptyList(),
-            token = null
-    )
+    companion object {
+        private val SUBMISSION = Submission(
+                problemId = "fib",
+                elapsedTime = 435.212,
+                sourceCode = "dummy source code",
+                statusCode = "ACCEPTED",
+                userId = "0-0",
+                language = "kotlin",
+                id = "2-4",
+                submissionId = "2",
+                consumedMemory = 10L,
+                errorMessage = null,
+                submissionTime = "",
+                passedTestCases = 1,
+                failedTestCases = 0,
+                token = null
+        )
 
-    @Language("JSON")
-    private val  SUBMISSION_JSON = """{
+        @Language("JSON")
+        private val SUBMISSION_JSON = """{
   "problemId": "fib",
   "elapsedTime": 435.212,
   "sourceCode": "dummy source code",
@@ -73,10 +77,13 @@ class SubmissionSerializationTest {
   "language": "kotlin",
   "id": "2-4",
   "submissionId": "2",
+  "submissionTime": "",
   "consumedMemory": 10,
-  "testcaseResults": []
+  "passedTestCases": 1,
+  "failedTestCases": 0
 }
 """
+    }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     data class QueueSubmission(
@@ -84,6 +91,7 @@ class SubmissionSerializationTest {
             val userId: String,
             val language: String,
             val submissionId: String,
+            val submissionTime: String,
             val problemId: String,
             val token: String?,
             val statusCode: String
