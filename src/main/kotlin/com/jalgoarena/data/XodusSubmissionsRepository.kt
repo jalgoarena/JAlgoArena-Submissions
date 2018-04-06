@@ -78,9 +78,8 @@ open class XodusSubmissionsRepository(db: Db) : SubmissionsRepository {
     override fun addOrUpdate(submission: Submission): Submission {
         return transactional {
 
-            val existingEntity = it.find(Constants.SUBMISSION_ENTITY_TYPE, Constants.userId, submission.userId).intersect(
-                    it.find(Constants.SUBMISSION_ENTITY_TYPE, Constants.problemId, submission.problemId)
-            ).firstOrNull()
+            val existingEntity = it.find(Constants.SUBMISSION_ENTITY_TYPE, Constants.submissionId, submission.submissionId)
+                    .firstOrNull()
 
             val entity = when (existingEntity) {
                 null -> it.newEntity(Constants.SUBMISSION_ENTITY_TYPE)
@@ -102,7 +101,8 @@ open class XodusSubmissionsRepository(db: Db) : SubmissionsRepository {
             setProperty(Constants.submissionId, submission.submissionId)
             setProperty(Constants.consumedMemory, submission.consumedMemory)
             setProperty(Constants.errorMessage, submission.errorMessage ?: "")
-            setProperty(Constants.testcaseResults, submission.testcaseResults!!.joinToString(";"))
+            setProperty(Constants.passedTestCases, submission.passedTestCases ?: 0)
+            setProperty(Constants.failedTestCases, submission.failedTestCases ?: 0)
         }
 
         return Submission.from(entity)

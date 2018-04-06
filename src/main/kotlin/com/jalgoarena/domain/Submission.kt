@@ -14,17 +14,14 @@ data class Submission(
         val elapsedTime: Double,
         val consumedMemory: Long,
         val errorMessage: String?,
-        val testcaseResults: List<Boolean>? = emptyList(),
+        val passedTestCases: Int?,
+        val failedTestCases: Int?,
         val token: String? = null,
         var id: String? = null) {
 
 
     companion object {
         fun from(entity: Entity): Submission {
-            val testcaseResults = (entity.getProperty(Constants.testcaseResults) as String)
-                    .split(";")
-                    .map(String::toBoolean)
-
             return Submission(
                     entity.getProperty(Constants.problemId) as String,
                     entity.getProperty(Constants.sourceCode) as String,
@@ -35,7 +32,8 @@ data class Submission(
                     entity.getProperty(Constants.elapsedTime) as Double,
                     entity.getProperty(Constants.consumedMemory) as Long,
                     entity.getProperty(Constants.errorMessage) as String?,
-                    testcaseResults,
+                    entity.getProperty(Constants.passedTestCases) as Int?,
+                    entity.getProperty(Constants.failedTestCases) as Int?,
                     id = entity.id.toString()
             )
         }
@@ -51,8 +49,8 @@ data class Submission(
                     0.0,
                     0L,
                     "Couldn't find submission",
-                    emptyList(),
-                    null
+                    0,
+                    0
             )
         }
     }
