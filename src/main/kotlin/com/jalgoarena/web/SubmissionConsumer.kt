@@ -2,7 +2,6 @@ package com.jalgoarena.web
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.jalgoarena.data.SubmissionsRepository
-import com.jalgoarena.domain.Constants.ADMIN_ROLE
 import com.jalgoarena.domain.Submission
 import org.slf4j.LoggerFactory
 import org.springframework.kafka.annotation.KafkaListener
@@ -55,9 +54,7 @@ class SubmissionConsumer(
             return false
         }
 
-        val result = ADMIN_ROLE == user.role || user.id == submission.userId
-
-        return if (result) {
+        return if (user.id == submission.userId) {
             true
         } else {
             logger.warn("Your are not ADMIN nor the authenticated user is not an owner of submission")
