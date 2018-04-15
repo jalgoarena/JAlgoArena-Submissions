@@ -35,7 +35,7 @@ class SubmissionResultsConsumer(
             logger.info("Submission result is saved [submissionId={}]", submission.submissionId)
 
             val future = template.send("events", UserSubmissionsEvent(userId = submission.userId))
-            future.addCallback(PublishHandler(submission.submissionId))
+            future.addCallback(PublishHandler(submission.submissionId, "submission result"))
 
         } else {
             logger.warn(
@@ -74,17 +74,19 @@ class SubmissionResultsConsumer(
     }
 
     class PublishHandler(
-            private val submissionId: String
+            private val submissionId: String, private val submissionType: String
     ) : ListenableFutureCallback<SendResult<Int, UserSubmissionsEvent>> {
 
         private val logger = LoggerFactory.getLogger(this.javaClass)
 
         override fun onSuccess(result: SendResult<Int, UserSubmissionsEvent>?) {
-            logger.info("Requested user submissions refresh after new submission [submissionId={}]", submissionId)
+            logger.info("Requested user submissions refresh after {} [submissionId={}]",
+                    submissionType, submissionId)
         }
 
         override fun onFailure(ex: Throwable?) {
-            logger.error("Error during user submissions refresh for submission [submissionId={}]", submissionId, ex)
+            logger.error("Error during user submissions refresh for submission [submissionId={}]",
+                    submissionId, ex)
         }
     }
 }

@@ -8,9 +8,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.kafka.annotation.KafkaListener
 import org.springframework.kafka.core.KafkaTemplate
-import org.springframework.kafka.support.SendResult
 import org.springframework.stereotype.Service
-import org.springframework.util.concurrent.ListenableFutureCallback
 import javax.inject.Inject
 
 @Service
@@ -35,7 +33,7 @@ class SubmissionConsumer(
             logger.info("${"Submission"} is saved [submissionId={}]", submission.submissionId)
 
             val future = template.send("events", UserSubmissionsEvent(userId = submission.userId))
-            future.addCallback(SubmissionResultsConsumer.PublishHandler(submission.submissionId))
+            future.addCallback(SubmissionResultsConsumer.PublishHandler(submission.submissionId, "new submission"))
 
         } else {
             logger.warn(
