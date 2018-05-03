@@ -28,7 +28,9 @@ class SubmissionResultsConsumer(
 
         val submission = toSubmission(message)
 
-        logger.info("Received {} [submissionId={}]", "Submission result", submission.submissionId)
+        logger.info("Received submission result [submissionId={}][status={}]",
+                submission.submissionId,
+                submission.statusCode)
 
         if (isValidUser(submission)) {
             submissionsRepository.addOrUpdate(submission)
@@ -80,7 +82,7 @@ class SubmissionResultsConsumer(
         private val logger = LoggerFactory.getLogger(this.javaClass)
 
         override fun onSuccess(result: SendResult<Int, UserSubmissionsEvent>?) {
-            logger.info("Requested user submissions refresh after {} [submissionId={}]",
+            logger.info("Requested user submissions refresh for {} [submissionId={}]",
                     submissionType, submissionId)
         }
 

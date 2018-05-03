@@ -26,11 +26,13 @@ class SubmissionConsumer(
 
         val submission = toSubmission(message)
 
-        logger.info("Received {} [submissionId={}]", "Submission", submission.submissionId)
+        logger.info("Received submission [submissionId={}][status={}]",
+                submission.submissionId,
+                submission.statusCode)
 
         if (isValidUser(submission)) {
             submissionsRepository.addOrUpdate(submission)
-            logger.info("${"Submission"} is saved [submissionId={}]", submission.submissionId)
+            logger.info("Submission is saved [submissionId={}]", submission.submissionId)
 
             val future = template.send("events", UserSubmissionsEvent(userId = submission.userId))
             future.addCallback(SubmissionResultsConsumer.PublishHandler(submission.submissionId, "new submission"))

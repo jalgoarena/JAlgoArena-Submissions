@@ -38,7 +38,8 @@ dependencies {
             'org.springframework.cloud:spring-cloud-starter-eureka',
             "org.jetbrains.kotlin:kotlin-stdlib",
             "org.jetbrains.xodus:xodus-openAPI:$xodus_version",
-            "org.jetbrains.xodus:xodus-entity-store:$xodus_version"
+            "org.jetbrains.xodus:xodus-entity-store:$xodus_version",
+            'net.logstash.logback:logstash-logback-encoder:5.1'
 
     testCompile 'junit:junit:4.12',
             'pl.pragmatists:JUnitParams:1.0.5',
