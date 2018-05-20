@@ -1,6 +1,7 @@
 package com.jalgoarena.web
 
 import com.jalgoarena.data.SubmissionsRepository
+import com.jalgoarena.domain.SubmissionStats
 import com.jalgoarena.domain.User
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -39,6 +40,34 @@ class SubmissionsController(
                 ok(submissionsRepository.findBySubmissionId(submissionId))
             }
         }
+    }
+
+    @GetMapping("/submissions/stats", produces = ["application/json"])
+    fun submissionStats(): ResponseEntity<SubmissionStats> {
+        return ok(stats(submissionsRepository))
+    }
+
+    private fun stats(submissionsRepository: SubmissionsRepository): SubmissionStats {
+        val count = mutableMapOf<String, MutableMap<String, MutableMap<String, Int>>>()
+        val submissions = submissionsRepository.findAll()
+
+        submissions.forEach { submission ->
+            if (!count.contains(submission.userId)) {
+                count[submission.userId] = mutableMapOf()
+            }
+
+            if (!count[submission.userId]!!.contains(submission.problemId)) {
+                count[submission.userId]!![submission.problemId] = mutableMapOf()
+            }
+
+            if (count[submission.userId]!![submission.problemId]!!.contains(submission.language)) {
+                count[submission.userId]!![submission.problemId]!![submission.language] = count[submission.userId]!![submission.problemId]!![submission.language]!! + 1
+            } else {
+                count[submission.userId]!![submission.problemId]!![submission.language] = 1
+            }
+        }
+
+        return SubmissionStats(count)
     }
 
     private fun <T> checkUser(token: String?, action: (User) -> ResponseEntity<T>): ResponseEntity<T> {
