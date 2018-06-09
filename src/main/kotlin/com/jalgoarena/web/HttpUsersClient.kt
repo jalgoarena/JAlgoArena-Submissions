@@ -16,7 +16,7 @@ class HttpUsersClient(
 
     override fun findAllUsers() = handleExceptions(returnOnException = emptyList()) {
         restTemplate.getForObject(
-                "jalgoarena-auth/users", Array<User>::class.java)!!.asList()
+                "http://jalgoarena-auth/users", Array<User>::class.java)!!.asList()
     }
 
     override fun findUser(token: String) = handleExceptions(returnOnException = null) {
@@ -27,7 +27,7 @@ class HttpUsersClient(
         val entity = HttpEntity<HttpHeaders>(headers)
 
         val response = restTemplate.exchange(
-                "jalgoarena-auth/api/user", HttpMethod.GET, entity, User::class.java)
+                "http://jalgoarena-auth/api/user", HttpMethod.GET, entity, User::class.java)
         response.body
     }
 
