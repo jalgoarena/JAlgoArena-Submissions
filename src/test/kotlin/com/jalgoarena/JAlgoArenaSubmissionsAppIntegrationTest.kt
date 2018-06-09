@@ -1,7 +1,6 @@
 package com.jalgoarena
 
 import com.jalgoarena.data.SubmissionsRepository
-import com.netflix.discovery.EurekaClient
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.After
 import org.junit.Test
@@ -21,12 +20,6 @@ import org.springframework.kafka.test.rule.KafkaEmbedded
 class JAlgoArenaSubmissionsAppIntegrationTest {
     @Inject
     private lateinit var restTemplate: TestRestTemplate
-
-    @MockBean
-    private lateinit var submissionsRepository: SubmissionsRepository
-
-    @MockBean
-    private lateinit var eurekaClient: EurekaClient
 
     @Inject
     private lateinit var embeddedKafka: KafkaEmbedded
