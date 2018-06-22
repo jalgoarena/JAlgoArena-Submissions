@@ -79,3 +79,12 @@ task releaseZip(type: Zip, dependsOn: 'bootRepackage') {
     archiveName "JAlgoArena-Submissions-${version}.zip"
     destinationDir(file('build/libs'))
 }
+
+task buildDockerImage(type: Exec, dependsOn: 'bootRepackage') {
+    commandLine 'docker',  'build', '-t', "spolnik/${rootProject.name}:latest", '-t', "spolnik/${rootProject.name}:${version}", '.'
+}
+
+task pushDockerImages(type: Exec, dependsOn: 'buildDockerImage') {
+    commandLine 'docker',  'push', "spolnik/${rootProject.name}:latest"
+    commandLine 'docker',  'push', "spolnik/${rootProject.name}:${version}"
+}
