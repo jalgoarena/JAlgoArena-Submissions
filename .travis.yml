@@ -1,25 +1,33 @@
-language: java
+sudo: required
+language: Java
+services:
+  - docker
 jdk:
-- oraclejdk8
+  - oraclejdk8
 before_install:
-- pip install --user codecov
+  - pip install --user codecov
 after_success:
-- codecov
+  - codecov
 before_cache:
-- rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
+  - rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
 cache:
   directories:
-  - "$HOME/.gradle/caches/"
-  - "$HOME/.gradle/wrapper/"
+    - "$HOME/.gradle/caches/"
+    - "$HOME/.gradle/wrapper/"
 before_deploy:
-- "./gradlew releaseZip"
+  - "./gradlew releaseZip"
 deploy:
-  provider: releases
-  api_key:
-    secure: KPEnlkJr112lrIuYzBahOlx35bdRvCFKp9afaWSqSv5ZwjFbkV8mIvEB+x6yQA9+YR9c1VPtDRvXZbKcZNjlxd7pGe4LKSIYqo+qbbcwH1GL2sUXs8w2tvXcONCALUMe1yOH0s+b4wK8SyoRcUrhkUutxLqVeeq2tm0SiQ5pd09bZ1v/hLMRnYRsUwAJYiC1XgqYbVP3H1bGKlXdKpFLhDj9Dr1S67f47ABXZH9CwKoGIxvZ3/D+LObkQ6Ng/kc+x2aEb0WKCwCffj0aOi5MhPsEGRaB5pLVOX/JdAWpdMg6dnmlhImtUsu346lrf/zGKlqso/TXgaUtN2Cxpg8qYB9Qn8BgA6BXXyONMAeQS6W9ZUM1hrtRdamXDc4SfBcc9hPLWavoGwA7Rfm22Nbp8VsDzEkR2gi3lP+CdoGdy9O/hnDNp2Fx0+ms4/80UsYnpjWwO2QSEs+dFj4EYISvWfeLEkDJojWug+9cAxlIQ8vyv+VXGELgo93z/MxzbhRM3Uy/HfLiSqzdduDIUrqEQ5lSqThHeg84TyuJYYZ4BeZcG7Rug1COzl9f4iwyvcsFoaBSb7AidqtTS30h7ENNKIs8fh6BR/5tjEq0X3GQ8gHZ66fdrEnF08fHL24ptDiA7pNKUD91qpcEYgOxCd7d+RZKDdpZweG/a0ad9SK5r68=
-  file_glob: true
-  file: "./build/libs/JAlgoArena-Submissions-*.zip"
-  skip_cleanup: true
-  on:
-    repo: spolnik/JAlgoArena-Submissions
-    tags: true
+  - provider: releases
+    api_key:
+      secure: KPEnlkJr112lrIuYzBahOlx35bdRvCFKp9afaWSqSv5ZwjFbkV8mIvEB+x6yQA9+YR9c1VPtDRvXZbKcZNjlxd7pGe4LKSIYqo+qbbcwH1GL2sUXs8w2tvXcONCALUMe1yOH0s+b4wK8SyoRcUrhkUutxLqVeeq2tm0SiQ5pd09bZ1v/hLMRnYRsUwAJYiC1XgqYbVP3H1bGKlXdKpFLhDj9Dr1S67f47ABXZH9CwKoGIxvZ3/D+LObkQ6Ng/kc+x2aEb0WKCwCffj0aOi5MhPsEGRaB5pLVOX/JdAWpdMg6dnmlhImtUsu346lrf/zGKlqso/TXgaUtN2Cxpg8qYB9Qn8BgA6BXXyONMAeQS6W9ZUM1hrtRdamXDc4SfBcc9hPLWavoGwA7Rfm22Nbp8VsDzEkR2gi3lP+CdoGdy9O/hnDNp2Fx0+ms4/80UsYnpjWwO2QSEs+dFj4EYISvWfeLEkDJojWug+9cAxlIQ8vyv+VXGELgo93z/MxzbhRM3Uy/HfLiSqzdduDIUrqEQ5lSqThHeg84TyuJYYZ4BeZcG7Rug1COzl9f4iwyvcsFoaBSb7AidqtTS30h7ENNKIs8fh6BR/5tjEq0X3GQ8gHZ66fdrEnF08fHL24ptDiA7pNKUD91qpcEYgOxCd7d+RZKDdpZweG/a0ad9SK5r68=
+    file_glob: true
+    file: "./build/libs/JAlgoArena-Submissions-*.zip"
+    skip_cleanup: true
+    on:
+      repo: spolnik/JAlgoArena-Submissions
+      tags: true
+  - provider: script
+    script: bash docker_push
+    on:
+      repo: spolnik/JAlgoArena-Submissions
+      tags: true
