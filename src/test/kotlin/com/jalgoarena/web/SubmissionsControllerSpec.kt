@@ -1,30 +1,25 @@
 package com.jalgoarena.web
 
-import com.fasterxml.jackson.databind.node.ArrayNode
 import com.jalgoarena.data.SubmissionsRepository
 import com.jalgoarena.domain.Submission
 import com.jalgoarena.domain.User
-import org.hamcrest.Matchers.hasSize
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.BDDMockito.given
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
+import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.MediaType
 import org.springframework.test.context.junit4.SpringRunner
-import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
+import org.springframework.test.web.reactive.server.WebTestClient
 import java.time.LocalDateTime
 import javax.inject.Inject
 
 @RunWith(SpringRunner::class)
-@WebMvcTest(SubmissionsController::class)
+@WebFluxTest(SubmissionsController::class)
 class SubmissionsControllerSpec {
 
     @Inject
-    private lateinit var mockMvc: MockMvc
+    private lateinit var webTestClient: WebTestClient
 
     @MockBean
     private lateinit var usersClient: UsersClient
@@ -34,29 +29,32 @@ class SubmissionsControllerSpec {
 
     @Test
     fun returns_401_if_user_is_not_authorized_get_submissions_for_user_id() {
-        mockMvc.perform(get("/submissions/${USER.id}")
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isUnauthorized)
+        webTestClient.get().uri("/submissions/${USER.id}")
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectStatus().isUnauthorized
     }
 
     @Test
     fun returns_401_if_user_is_the_same_as_submissions_owner_get_submissions_for_user_id() {
         given(usersClient.findUser(DUMMY_TOKEN)).willReturn(USER)
 
-        mockMvc.perform(get("/submissions/differentuser")
+        webTestClient.get().uri("/submissions/differentuser")
                 .header("X-Authorization", DUMMY_TOKEN)
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isUnauthorized)
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectStatus().isUnauthorized
     }
 
     @Test
     fun returns_401_when_user_is_unidentified_for_get_submissions_for_user_id() {
         given(usersClient.findUser(DUMMY_TOKEN)).willReturn(null)
 
-        mockMvc.perform(get("/submissions/${USER.id}")
+        webTestClient.get().uri("/submissions/${USER.id}")
                 .header("X-Authorization", DUMMY_TOKEN)
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isUnauthorized)
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectStatus().isUnauthorized
     }
 
     @Test
@@ -67,11 +65,13 @@ class SubmissionsControllerSpec {
         val userSubmissions = listOf(submission(USER.id, "0-0"))
         given(submissionRepository.findByUserId(USER.id)).willReturn(userSubmissions)
 
-        mockMvc.perform(get("/submissions/${USER.id}")
+        webTestClient.get().uri("/submissions/${USER.id}")
                 .header("X-Authorization", DUMMY_TOKEN)
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk)
-                .andExpect(jsonPath("$", hasSize<ArrayNode>(1)))
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectStatus().isOk
+                .expectBody()
+                .jsonPath("$.length()").isEqualTo(1)
     }
 
     companion object {
