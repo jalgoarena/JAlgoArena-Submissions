@@ -130,13 +130,12 @@ class SubmissionsRepositorySpec {
         assertThat(submissions).isEmpty()
     }
 
-    private fun submission(problemId: String, userId: String, language: String, submissionId: String) =
+    private fun submission(problemId: String, userId: String, submissionId: String) =
             Submission(
                     problemId,
                     "class Solution",
                     "ACCEPTED",
                     userId,
-                    language,
                     submissionId,
                     LocalDateTime.now().toString(),
                     0.5,
@@ -149,8 +148,8 @@ class SubmissionsRepositorySpec {
     private val user1 = "User#1"
     private val user2 = "User#2"
 
-    private val user1SubmissionForFibInKotlin = submission("fib", user1, "kotlin", "1")
-    private val user1SubmissionForFibInJava = submission("fib", user1, "java", "2")
-    private val user2SubmissionForFibInKotlin = submission("fib", user2, "kotlin", "3")
-    private val user2SubmissionForTwoSumInKotlin = submission("2-sum", user2, "kotlin", "4")
+    private val user1SubmissionForFibInKotlin = submission("fib", user1, "1")
+    private val user1SubmissionForFibInJava = submission("fib", user1, "2")
+    private val user2SubmissionForFibInKotlin = submission("fib", user2, "3")
+    private val user2SubmissionForTwoSumInKotlin = submission("2-sum", user2, "4")
 }

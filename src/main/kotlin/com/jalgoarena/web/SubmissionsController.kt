@@ -48,7 +48,7 @@ class SubmissionsController(
     }
 
     private fun stats(submissionsRepository: SubmissionsRepository): SubmissionStats {
-        val count = mutableMapOf<String, MutableMap<String, MutableMap<String, Int>>>()
+        val count = mutableMapOf<String, MutableMap<String, Int>>()
         val submissions = submissionsRepository.findAll()
 
         submissions.forEach { submission ->
@@ -57,13 +57,9 @@ class SubmissionsController(
             }
 
             if (!count[submission.userId]!!.contains(submission.problemId)) {
-                count[submission.userId]!![submission.problemId] = mutableMapOf()
-            }
-
-            if (count[submission.userId]!![submission.problemId]!!.contains(submission.language)) {
-                count[submission.userId]!![submission.problemId]!![submission.language] = count[submission.userId]!![submission.problemId]!![submission.language]!! + 1
+                count[submission.userId]!![submission.problemId] = count[submission.userId]!![submission.problemId]!! + 1
             } else {
-                count[submission.userId]!![submission.problemId]!![submission.language] = 1
+                count[submission.userId]!![submission.problemId] = 1
             }
         }
 

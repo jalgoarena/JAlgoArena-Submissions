@@ -35,7 +35,6 @@ class SubmissionSerializationTest {
         val queueSubmission = QueueSubmission(
                 SUBMISSION.sourceCode,
                 SUBMISSION.userId,
-                SUBMISSION.language,
                 SUBMISSION.submissionId,
                 SUBMISSION.submissionTime,
                 SUBMISSION.problemId,
@@ -56,7 +55,6 @@ class SubmissionSerializationTest {
                 sourceCode = "dummy source code",
                 statusCode = "ACCEPTED",
                 userId = "0-0",
-                language = "kotlin",
                 id = "2-4",
                 submissionId = "2",
                 consumedMemory = 10L,
@@ -74,7 +72,6 @@ class SubmissionSerializationTest {
   "sourceCode": "dummy source code",
   "statusCode": "ACCEPTED",
   "userId": "0-0",
-  "language": "kotlin",
   "id": "2-4",
   "submissionId": "2",
   "submissionTime": "",
@@ -89,7 +86,6 @@ class SubmissionSerializationTest {
     data class QueueSubmission(
             val sourceCode: String,
             val userId: String,
-            val language: String,
             val submissionId: String,
             val submissionTime: String,
             val problemId: String,

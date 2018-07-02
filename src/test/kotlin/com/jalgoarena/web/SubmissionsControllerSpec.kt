@@ -87,7 +87,6 @@ class SubmissionsControllerSpec {
                         problemId,
                         "class Solution",
                         "ACCEPTED", userId,
-                        "java",
                         "2",
                         LocalDateTime.now().toString(),
                         0.5,

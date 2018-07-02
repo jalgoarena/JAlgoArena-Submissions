@@ -6,7 +6,6 @@ object Constants {
     const val sourceCode = "sourceCode"
     const val statusCode = "statusCode"
     const val userId = "userId"
-    const val language = "language"
     const val submissionId = "submissionId"
     const val submissionTime = "submissionTime"
     const val consumedMemory = "consumedMemory"
