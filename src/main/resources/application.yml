@@ -2,7 +2,7 @@ logging:
   path: ./logs
 
 server:
-  port: ${PORT:0}
+  port: ${PORT:5004}
 
 spring:
   cloud:
