@@ -9,4 +9,4 @@ VOLUME /app/SubmissionsStore
 
 EXPOSE 5004
 
-CMD ["/usr/bin/java", "-jar", "/app/jalgoarena-submissions-*.jar"]
+CMD java -jar /app/jalgoarena-submissions-*.jar
