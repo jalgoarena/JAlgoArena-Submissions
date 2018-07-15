@@ -4,7 +4,7 @@ MAINTAINER Jacek Spolnik <jacek.spolnik@gmail.com>
 
 WORKDIR /app
 COPY build/libs/jalgoarena-submissions-*.jar /app
-RUN mkdir /app/SubmissionsStore
+
 VOLUME /app/SubmissionsStore
 
 EXPOSE 5004
