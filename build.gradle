@@ -4,7 +4,7 @@ buildscript {
 }
 
 plugins {
-    id "org.jetbrains.kotlin.jvm" version "1.2.50"
+    id "org.jetbrains.kotlin.jvm" version "1.2.51"
     id 'org.springframework.boot' version '2.0.1.RELEASE'
     id "jacoco"
 }
@@ -81,9 +81,9 @@ task releaseZip(type: Zip, dependsOn: 'bootJar') {
 }
 
 task buildDockerImage(type: Exec, dependsOn: 'bootJar') {
-    commandLine 'docker',  'build', '-t', "spolnik/${rootProject.name}:${version}", '.'
+    commandLine 'docker',  'build', '-t', "jalgoarena/submissions:${version}", '.'
 }
 
 task pushDockerImages(type: Exec, dependsOn: 'buildDockerImage') {
-    commandLine 'docker',  'push', "spolnik/${rootProject.name}:${version}"
+    commandLine 'docker',  'push', "jalgoarena/submissions:${version}"
 }
