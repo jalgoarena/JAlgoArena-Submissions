@@ -30,14 +30,14 @@ open class AppConfiguration {
         val kafka2 = retrieveKafkaAddress("kafka2")
         val kafka3 = retrieveKafkaAddress("kafka3")
 
-        val bootstrapServers = listOf(kafka1, kafka2, kafka3).filter { it.isNotBlank() }.toTypedArray()
+        val bootstrapServers = listOf(kafka1, kafka2, kafka3).filter { it.isNotBlank() }
 
         logger.info("Configuring kafka brokers with: $bootstrapServers")
 
         val config = mutableMapOf<String, Any>()
 
         config[AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG] =
-                StringUtils.arrayToCommaDelimitedString(bootstrapServers)
+                StringUtils.arrayToCommaDelimitedString(bootstrapServers.toTypedArray())
 
         return KafkaAdmin(config)
     }
@@ -53,7 +53,7 @@ open class AppConfiguration {
             return NO_KAFKA_INSTANCE
         }
 
-        val uri = kafka1Instances[1].uri
+        val uri = kafka1Instances[0].uri
         return "${uri.host}:${uri.port}"
     }
 
