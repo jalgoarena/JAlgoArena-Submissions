@@ -9,4 +9,4 @@ VOLUME /app/SubmissionsStore
 
 EXPOSE 5004
 
-CMD java -jar /app/jalgoarena-submissions-*.jar
+CMD java -XX:+PrintFlagsFinal $JAVA_OPTS -jar /app/jalgoarena-submissions-*.jar
