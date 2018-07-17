@@ -9,12 +9,11 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.kafka.annotation.KafkaListener
 import org.springframework.kafka.core.KafkaTemplate
 import org.springframework.stereotype.Service
-import javax.inject.Inject
 
 @Service
 class SubmissionConsumer(
-        @Inject private val submissionsRepository: SubmissionsRepository,
-        @Inject private val usersClient: UsersClient
+        @Autowired private val submissionsRepository: SubmissionsRepository,
+        @Autowired private val usersClient: UsersClient
 ) {
     private val logger = LoggerFactory.getLogger(this.javaClass)
 

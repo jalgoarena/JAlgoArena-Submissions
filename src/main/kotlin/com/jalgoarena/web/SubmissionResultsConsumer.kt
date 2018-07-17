@@ -11,12 +11,11 @@ import org.springframework.kafka.core.KafkaTemplate
 import org.springframework.kafka.support.SendResult
 import org.springframework.stereotype.Service
 import org.springframework.util.concurrent.ListenableFutureCallback
-import javax.inject.Inject
 
 @Service
 class SubmissionResultsConsumer(
-        @Inject private val submissionsRepository: SubmissionsRepository,
-        @Inject private val usersClient: UsersClient
+        @Autowired private val submissionsRepository: SubmissionsRepository,
+        @Autowired private val usersClient: UsersClient
 ) {
     private val logger = LoggerFactory.getLogger(this.javaClass)
 

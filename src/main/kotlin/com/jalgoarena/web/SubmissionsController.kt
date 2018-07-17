@@ -4,16 +4,16 @@ import com.jalgoarena.data.SubmissionsRepository
 import com.jalgoarena.domain.Submission
 import com.jalgoarena.domain.SubmissionStats
 import com.jalgoarena.domain.User
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.http.ResponseEntity.ok
 import org.springframework.web.bind.annotation.*
-import javax.inject.Inject
 
 @RestController
 class SubmissionsController(
-        @Inject private val usersClient: UsersClient,
-        @Inject private val submissionsRepository: SubmissionsRepository
+        @Autowired private val usersClient: UsersClient,
+        @Autowired private val submissionsRepository: SubmissionsRepository
 ) {
 
     @GetMapping("/submissions/{userId}", produces = ["application/json"])
