@@ -14,7 +14,7 @@ import org.springframework.web.client.RestOperations
 class HttpUsersClientSpec {
 
     private val restTemplate = mock(RestOperations::class.java)
-    private val usersClient = HttpUsersClient(restTemplate)
+    private val usersClient = HttpUsersClient(restTemplate, "http://jalgoarena-api")
 
     @Test
     fun delegates_get_user_request_to_auth_service_endpoint() {
@@ -27,7 +27,7 @@ class HttpUsersClientSpec {
 
 
         given(restTemplate.exchange(
-                "http://jalgoarena-auth/api/user", HttpMethod.GET, entity, User::class.java
+                "http://jalgoarena-api/auth/api/user", HttpMethod.GET, entity, User::class.java
         )).willReturn(ResponseEntity.ok(USER))
 
         val user = usersClient.findUser(DUMMY_TOKEN)
@@ -45,7 +45,7 @@ class HttpUsersClientSpec {
     @Test
     fun returns_all_users() {
 
-        given(restTemplate.getForObject("http://jalgoarena-auth/users", Array<User>::class.java))
+        given(restTemplate.getForObject("http://jalgoarena-api/auth/users", Array<User>::class.java))
                 .willReturn(arrayOf(USER))
 
         val users = usersClient.findAllUsers()
