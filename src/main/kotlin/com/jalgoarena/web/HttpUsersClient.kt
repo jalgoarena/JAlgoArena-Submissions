@@ -10,10 +10,10 @@ import org.springframework.http.HttpMethod
 import org.springframework.stereotype.Service
 import org.springframework.web.client.RestOperations
 
-@Service
+
 class HttpUsersClient(
-        @Autowired private val restTemplate : RestOperations,
-        @Value("\${jalgoarena.api.url}") private val jalgoarenaApiUrl: String
+        private val restTemplate : RestOperations,
+        private val jalgoarenaApiUrl: String
 ) : UsersClient {
 
     override fun findAllUsers() = handleExceptions(returnOnException = emptyList()) {
