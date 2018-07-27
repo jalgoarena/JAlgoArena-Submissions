@@ -3,7 +3,6 @@ package com.jalgoarena.web
 import com.jalgoarena.data.SubmissionsRepository
 import com.jalgoarena.domain.Submission
 import com.jalgoarena.domain.User
-import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.BDDMockito.given
@@ -73,65 +72,6 @@ class SubmissionsControllerSpec {
                 .expectStatus().isOk
                 .expectBody()
                 .jsonPath("$.length()").isEqualTo(1)
-    }
-
-    @Test
-    fun returns_200_and_empty_stats_for_no_submissions() {
-        given(submissionRepository.findAll()).willReturn(emptyList())
-
-        webTestClient.get().uri("/submissions/stats")
-                .accept(MediaType.APPLICATION_JSON)
-                .exchange()
-                .expectStatus().isOk
-                .returnResult(String::class.java)
-                .consumeWith {
-                    assertThat(it.responseBody.blockFirst()).isEqualTo("{\"count\":{}}")
-                }
-    }
-
-    @Test
-    fun returns_200_and_stats_for_single_user_single_submissions() {
-        val userSubmissions = listOf(submission(USER.id, 0))
-        given(submissionRepository.findAll()).willReturn(userSubmissions)
-
-        webTestClient.get().uri("/submissions/stats")
-                .accept(MediaType.APPLICATION_JSON)
-                .exchange()
-                .expectStatus().isOk
-                .returnResult(String::class.java)
-                .consumeWith {
-                    assertThat(it.responseBody.blockFirst()).isEqualTo("{\"count\":{\"0-0\":{\"fib\":1}}}")
-                }
-    }
-
-    @Test
-    fun returns_200_and_stats_for_single_user_many_submissions() {
-        val userSubmissions = listOf(submission(USER.id, 0), submission(USER.id, 1))
-        given(submissionRepository.findAll()).willReturn(userSubmissions)
-
-        webTestClient.get().uri("/submissions/stats")
-                .accept(MediaType.APPLICATION_JSON)
-                .exchange()
-                .expectStatus().isOk
-                .returnResult(String::class.java)
-                .consumeWith {
-                    assertThat(it.responseBody.blockFirst()).isEqualTo("{\"count\":{\"0-0\":{\"fib\":2}}}")
-                }
-    }
-
-    @Test
-    fun returns_200_and_stats_for_many_user_many_submissions() {
-        val userSubmissions = listOf(submission(USER.id, 0), submission(USER.id, 1), submission("0-1", 2))
-        given(submissionRepository.findAll()).willReturn(userSubmissions)
-
-        webTestClient.get().uri("/submissions/stats")
-                .accept(MediaType.APPLICATION_JSON)
-                .exchange()
-                .expectStatus().isOk
-                .returnResult(String::class.java)
-                .consumeWith {
-                    assertThat(it.responseBody.blockFirst()).isEqualTo("{\"count\":{\"0-0\":{\"fib\":2},\"0-1\":{\"fib\":1}}}")
-                }
     }
 
     companion object {

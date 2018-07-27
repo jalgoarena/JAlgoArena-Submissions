@@ -35,7 +35,7 @@ class SubmissionConsumer(
                 logger.info("Submission is saved [submissionId={}]", submission.submissionId)
 
                 val future = template.send("events", UserSubmissionsEvent(userId = submission.userId))
-                future.addCallback(SubmissionResultsConsumer.PublishHandler(submission.submissionId, "new submission"))
+                future.addCallback(SubmissionResultsConsumer.UserSubmissionsEventPublishHandler(submission.submissionId, "new submission"))
 
             } else {
                 logger.warn(

@@ -2,6 +2,7 @@ package com.jalgoarena.web
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.jalgoarena.data.SubmissionsRepository
+import com.jalgoarena.domain.RankingEvent
 import com.jalgoarena.domain.Submission
 import com.jalgoarena.domain.UserSubmissionsEvent
 import org.slf4j.LoggerFactory
@@ -20,7 +21,10 @@ class SubmissionResultsConsumer(
     private val logger = LoggerFactory.getLogger(this.javaClass)
 
     @Autowired
-    private lateinit var template: KafkaTemplate<Int, UserSubmissionsEvent>
+    private lateinit var userSubmissionsEventPublisher: KafkaTemplate<Int, UserSubmissionsEvent>
+
+    @Autowired
+    private lateinit var rankingEventPublisher: KafkaTemplate<Int, RankingEvent>
 
     @KafkaListener(topics = ["results"])
     fun storeSubmission(message: String) {
@@ -36,8 +40,17 @@ class SubmissionResultsConsumer(
                 submissionsRepository.save(submission)
                 logger.info("Submission result is saved [submissionId={}]", submission.submissionId)
 
-                val future = template.send("events", UserSubmissionsEvent(userId = submission.userId))
-                future.addCallback(PublishHandler(submission.submissionId, "submission result"))
+                val usersSubmissionsEventFuture = userSubmissionsEventPublisher.send(
+                        "events", UserSubmissionsEvent(userId = submission.userId)
+                )
+                usersSubmissionsEventFuture.addCallback(
+                        UserSubmissionsEventPublishHandler(submission.submissionId, "submission result")
+                )
+
+                val rankingEventFuture = rankingEventPublisher.send(
+                        "events", RankingEvent(problemId = submission.problemId)
+                )
+                rankingEventFuture.addCallback(RankingEventPublishHandler(submission.submissionId))
 
             } else {
                 logger.warn(
@@ -79,7 +92,7 @@ class SubmissionResultsConsumer(
         }
     }
 
-    class PublishHandler(
+    class UserSubmissionsEventPublishHandler(
             private val submissionId: String, private val submissionType: String
     ) : ListenableFutureCallback<SendResult<Int, UserSubmissionsEvent>> {
 
@@ -94,5 +107,21 @@ class SubmissionResultsConsumer(
             logger.error("Error during user submissions refresh for submission [submissionId={}]",
                     submissionId, ex)
         }
+    }
+
+    class RankingEventPublishHandler(
+            private val submissionId: String
+    ) : ListenableFutureCallback<SendResult<Int, RankingEvent>> {
+
+        private val logger = LoggerFactory.getLogger(this.javaClass)
+
+        override fun onSuccess(result: SendResult<Int, RankingEvent>?) {
+            logger.info("Requested ranking refresh after new submission [submissionId={}]", submissionId)
+        }
+
+        override fun onFailure(ex: Throwable?) {
+            logger.error("Error during ranking refresh for submission [submissionId={}]", submissionId, ex)
+        }
+
     }
 }
