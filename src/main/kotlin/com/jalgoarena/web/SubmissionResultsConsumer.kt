@@ -25,25 +25,30 @@ class SubmissionResultsConsumer(
     @KafkaListener(topics = ["results"])
     fun storeSubmission(message: String) {
 
-        val submission = toSubmission(message)
+        try {
+            val submission = toSubmission(message)
 
-        logger.info("Received submission result [submissionId={}][status={}]",
-                submission.submissionId,
-                submission.statusCode)
-
-        if (isValidUser(submission)) {
-            submissionsRepository.addOrUpdate(submission)
-            logger.info("Submission result is saved [submissionId={}]", submission.submissionId)
-
-            val future = template.send("events", UserSubmissionsEvent(userId = submission.userId))
-            future.addCallback(PublishHandler(submission.submissionId, "submission result"))
-
-        } else {
-            logger.warn(
-                    "Cannot store Submission result [submissionId={}] - authentication failed",
+            logger.info("Received submission result [submissionId={}][status={}]",
                     submission.submissionId,
-                    submission.userId
-            )
+                    submission.statusCode)
+
+            if (isValidUser(submission)) {
+                submissionsRepository.save(submission)
+                logger.info("Submission result is saved [submissionId={}]", submission.submissionId)
+
+                val future = template.send("events", UserSubmissionsEvent(userId = submission.userId))
+                future.addCallback(PublishHandler(submission.submissionId, "submission result"))
+
+            } else {
+                logger.warn(
+                        "Cannot store Submission result [submissionId={}] - authentication failed",
+                        submission.submissionId,
+                        submission.userId
+                )
+            }
+        } catch (ex: Exception) {
+            logger.error("Cannot store submission result: {}", message, ex)
+            throw ex
         }
     }
 

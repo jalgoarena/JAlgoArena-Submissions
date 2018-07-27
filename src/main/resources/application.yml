@@ -17,3 +17,14 @@ spring:
       retries: 3
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+  jpa:
+    hibernate:
+      ddl-auto: ${JPA_DDL_AUTO:update}
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+    show-sql: true
+  datasource:
+    url: jdbc:postgresql://${COCKROACH_HOST:localhost:26257}/jalgoarena?sslmode=disable
+    username: ${COCKROACH_USERNAME:jalgo}
+    password: ${COCKROACH_PASSWORD:}

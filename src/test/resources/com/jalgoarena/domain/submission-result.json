@@ -4,7 +4,7 @@
   "sourceCode": "dummy source code",
   "statusCode": "ACCEPTED",
   "userId": "0-0",
-  "id": "2-4",
+  "id": 2,
   "submissionId": "2",
   "submissionTime": "",
   "consumedMemory": 10,

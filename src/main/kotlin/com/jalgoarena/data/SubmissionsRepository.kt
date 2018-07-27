@@ -1,16 +1,10 @@
 package com.jalgoarena.data
 
 import com.jalgoarena.domain.Submission
+import org.springframework.data.jpa.repository.JpaRepository
 
-interface SubmissionsRepository {
-    fun findAll(): List<Submission>
+interface SubmissionsRepository : JpaRepository<Submission, Int> {
     fun findByUserId(userId: String): List<Submission>
-    fun findById(id: String): Submission?
-    fun findByProblemId(problemId: String): List<Submission>
-    fun addOrUpdate(submission: Submission): Submission
-    fun delete(id: String): List<Submission>
-    fun destroy()
     fun findBySubmissionId(submissionId: String): Submission
-    fun findAllAccepted(): List<Submission>
 }
 

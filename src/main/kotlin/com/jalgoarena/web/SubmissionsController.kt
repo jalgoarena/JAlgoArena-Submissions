@@ -57,7 +57,8 @@ class SubmissionsController(
             }
 
             if (count[submission.userId]!!.contains(submission.problemId)) {
-                count[submission.userId]!![submission.problemId] = count[submission.userId]!![submission.problemId]!! + 1
+                count[submission.userId]!![submission.problemId] =
+                        count[submission.userId]!![submission.problemId]!! + 1
             } else {
                 count[submission.userId]!![submission.problemId] = 1
             }
@@ -75,5 +76,6 @@ class SubmissionsController(
         return action(user)
     }
 
-    private fun <T> unauthorized(): ResponseEntity<T> = ResponseEntity(HttpStatus.UNAUTHORIZED)
+    private fun <T> unauthorized(): ResponseEntity<T> =
+            ResponseEntity(HttpStatus.UNAUTHORIZED)
 }

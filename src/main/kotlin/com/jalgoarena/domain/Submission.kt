@@ -1,57 +1,40 @@
 package com.jalgoarena.domain
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
-import jetbrains.exodus.entitystore.Entity
 import java.time.LocalDateTime
+import javax.persistence.*
 
 @JsonIgnoreProperties(ignoreUnknown = true)
+@Entity
+@Table(name = "submissions")
 data class Submission(
-        val problemId: String,
-        val sourceCode: String,
-        val statusCode: String,
-        val userId: String,
-        val submissionId: String,
-        val submissionTime: String,
-        val elapsedTime: Double,
-        val consumedMemory: Long,
-        val errorMessage: String?,
-        val passedTestCases: Int?,
-        val failedTestCases: Int?,
-        val token: String? = null,
-        var id: String? = null) {
-
+        @Column(nullable=false)
+        var problemId: String = "",
+        @Column(nullable=false)
+        var sourceCode: String = "",
+        @Column(nullable=false)
+        var statusCode: String = "NOT_FOUND",
+        @Column(nullable=false)
+        var userId: String = "",
+        @Column(unique=true, nullable=false)
+        var submissionId: String = "",
+        @Column(nullable=false)
+        var submissionTime: String = LocalDateTime.now().toString(),
+        @Column(nullable=false)
+        var elapsedTime: Double = -1.0,
+        @Column(nullable=false)
+        var consumedMemory: Long = 0L,
+        var errorMessage: String? = null,
+        var passedTestCases: Int? = 0,
+        var failedTestCases: Int? = 0,
+        var token: String? = null,
+        @Id @GeneratedValue(strategy = GenerationType.AUTO)
+        var id: Int? = null) {
 
     companion object {
-        fun from(entity: Entity): Submission {
-            return Submission(
-                    entity.getProperty(Constants.problemId) as String,
-                    entity.getProperty(Constants.sourceCode) as String,
-                    entity.getProperty(Constants.statusCode) as String,
-                    entity.getProperty(Constants.userId) as String,
-                    entity.getProperty(Constants.submissionId) as String,
-                    entity.getProperty(Constants.submissionTime) as String,
-                    entity.getProperty(Constants.elapsedTime) as Double,
-                    entity.getProperty(Constants.consumedMemory) as Long,
-                    entity.getProperty(Constants.errorMessage) as String?,
-                    entity.getProperty(Constants.passedTestCases) as Int?,
-                    entity.getProperty(Constants.failedTestCases) as Int?,
-                    id = entity.id.toString()
-            )
-        }
-
         fun notFound(submissionId: String): Submission {
             return Submission(
-                    "",
-                    "",
-                    "NOT_FOUND",
-                    "",
-                    submissionId,
-                    LocalDateTime.now().toString(),
-                    -1.0,
-                    0L,
-                    "Couldn't find submission",
-                    0,
-                    0
+                    submissionId = submissionId
             )
         }
     }

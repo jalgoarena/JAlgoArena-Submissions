@@ -63,7 +63,7 @@ class SubmissionsControllerSpec {
         given(usersClient.findUser(DUMMY_TOKEN)).willReturn(USER)
         given(usersClient.findAllUsers()).willReturn(emptyList())
 
-        val userSubmissions = listOf(submission(USER.id, "0-0"))
+        val userSubmissions = listOf(submission(USER.id, 0))
         given(submissionRepository.findByUserId(USER.id)).willReturn(userSubmissions)
 
         webTestClient.get().uri("/submissions/${USER.id}")
@@ -91,7 +91,7 @@ class SubmissionsControllerSpec {
 
     @Test
     fun returns_200_and_stats_for_single_user_single_submissions() {
-        val userSubmissions = listOf(submission(USER.id, "0-0"))
+        val userSubmissions = listOf(submission(USER.id, 0))
         given(submissionRepository.findAll()).willReturn(userSubmissions)
 
         webTestClient.get().uri("/submissions/stats")
@@ -106,7 +106,7 @@ class SubmissionsControllerSpec {
 
     @Test
     fun returns_200_and_stats_for_single_user_many_submissions() {
-        val userSubmissions = listOf(submission(USER.id, "0-0"), submission(USER.id, "0-1"))
+        val userSubmissions = listOf(submission(USER.id, 0), submission(USER.id, 1))
         given(submissionRepository.findAll()).willReturn(userSubmissions)
 
         webTestClient.get().uri("/submissions/stats")
@@ -121,7 +121,7 @@ class SubmissionsControllerSpec {
 
     @Test
     fun returns_200_and_stats_for_many_user_many_submissions() {
-        val userSubmissions = listOf(submission(USER.id, "0-0"), submission(USER.id, "0-1"), submission("0-1", "0-0"))
+        val userSubmissions = listOf(submission(USER.id, 0), submission(USER.id, 1), submission("0-1", 2))
         given(submissionRepository.findAll()).willReturn(userSubmissions)
 
         webTestClient.get().uri("/submissions/stats")
@@ -139,10 +139,10 @@ class SubmissionsControllerSpec {
         private val USER = User("julia", "Kraków", "Tyniec Team", "USER", "0-0")
         private const val DUMMY_TOKEN = "Bearer 123j12n31lkmdp012j21d"
 
-        private fun submission(userId: String, id: String? = null) =
+        private fun submission(userId: String, id: Int? = null) =
                 submissionForProblem("fib", userId, id)
 
-        private fun submissionForProblem(problemId: String, userId: String, id: String? = null) =
+        private fun submissionForProblem(problemId: String, userId: String, id: Int? = null) =
                 Submission(
                         problemId,
                         "class Solution",
