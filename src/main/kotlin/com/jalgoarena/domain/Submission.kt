@@ -10,7 +10,7 @@ import javax.persistence.*
 data class Submission(
         @Column(nullable = false)
         var problemId: String = "",
-        @Column(nullable = false)
+        @Column(nullable = false, length = 20000)
         var sourceCode: String = "",
         @Column(nullable = false)
         var statusCode: String = "NOT_FOUND",

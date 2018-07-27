@@ -8,7 +8,9 @@ import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.kafka.annotation.KafkaListener
 import org.springframework.kafka.core.KafkaTemplate
+import org.springframework.kafka.support.SendResult
 import org.springframework.stereotype.Service
+import org.springframework.util.concurrent.ListenableFutureCallback
 
 @Service
 class SubmissionConsumer(
@@ -18,7 +20,10 @@ class SubmissionConsumer(
     private val logger = LoggerFactory.getLogger(this.javaClass)
 
     @Autowired
-    private lateinit var template: KafkaTemplate<Int, UserSubmissionsEvent>
+    private lateinit var userSubmissionsEventPublisher: KafkaTemplate<Int, UserSubmissionsEvent>
+
+    @Autowired
+    private lateinit var submissionPublisher: KafkaTemplate<Int, Submission>
 
     @KafkaListener(topics = ["submissions"])
     fun storeSubmission(message: String) {
@@ -31,11 +36,25 @@ class SubmissionConsumer(
                     submission.statusCode)
 
             if (isValidUser(submission)) {
-                submissionsRepository.save(submission)
-                logger.info("Submission is saved [submissionId={}]", submission.submissionId)
+                val savedSubmission = submissionsRepository.save(submission)
+                logger.info(
+                        "Submission is saved [submissionId={},id={}]",
+                        savedSubmission.submissionId, savedSubmission.id
+                )
 
-                val future = template.send("events", UserSubmissionsEvent(userId = submission.userId))
-                future.addCallback(SubmissionResultsConsumer.UserSubmissionsEventPublishHandler(submission.submissionId, "new submission"))
+                val submissionsToJudgeFuture = submissionPublisher.send(
+                        "submissionsToJudge", savedSubmission
+                )
+                submissionsToJudgeFuture.addCallback(SubmissionToJudgePublishHandler(
+                        savedSubmission.submissionId, savedSubmission.id!!
+                ))
+
+                val future = userSubmissionsEventPublisher.send(
+                        "events", UserSubmissionsEvent(userId = submission.userId)
+                )
+                future.addCallback(SubmissionResultsConsumer.UserSubmissionsEventPublishHandler(
+                        submission.submissionId, "new submission"
+                ))
 
             } else {
                 logger.warn(
@@ -77,4 +96,22 @@ class SubmissionConsumer(
         }
     }
 
+    class SubmissionToJudgePublishHandler(
+            private val submissionId: String, private val id: Int
+    ) : ListenableFutureCallback<SendResult<Int, Submission>> {
+
+        private val logger = LoggerFactory.getLogger(this.javaClass)
+
+        override fun onSuccess(result: SendResult<Int, Submission>?) {
+            logger.info("Submission passed for judgement [submissionId={}, id={}]",
+                    submissionId, id
+            )
+        }
+
+        override fun onFailure(ex: Throwable?) {
+            logger.error("Error during passing submission for judgement [submissionId={}, id={}]",
+                    submissionId, id, ex
+            )
+        }
+    }
 }
