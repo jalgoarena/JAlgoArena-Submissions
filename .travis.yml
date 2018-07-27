@@ -24,10 +24,8 @@ deploy:
     file: "./build/libs/JAlgoArena-Submissions-*.zip"
     skip_cleanup: true
     on:
-      repo: spolnik/JAlgoArena-Submissions
       tags: true
   - provider: script
     script: bash docker_push
     on:
-      repo: spolnik/JAlgoArena-Submissions
       tags: true
