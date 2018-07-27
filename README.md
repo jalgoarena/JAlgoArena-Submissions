@@ -3,10 +3,7 @@
 JAlgoArena Submissions is service dedicated for collecting users submissions and exposing that data. Querying submissions and submitting it has to be secure operation - methods require passing token which is then checked with Auth service.
 
 - [Introduction](#introduction)
-- [REST API](#rest-api)
-- [Components](#components)
-- [Continuous Delivery](#continuous-delivery)
-- [Infrastructure](#infrastructure)
+- [API](#api)
 - [Running Locally](#running-locally)
 - [Notes](#notes)
 
@@ -16,12 +13,76 @@ JAlgoArena Submissions is service dedicated for collecting users submissions and
 
 ![Component Diagram](https://github.com/spolnik/JAlgoArena-Submissions/raw/master/design/component_diagram.png)
 
-# REST API
+## API
 
-| Endpoint | Description |
-| ---- | --------------- |
-| [GET /submissions/:userId] | Get all user submissions (only for logged in user) |
+#### Find all user submissions
 
+  _Given user token - find all user submissions_
+
+|URL|Method|
+|---|------|
+|_/submissions/:userId_|`GET`|
+
+* **Data Params**
+
+  _User id path parameter has to be in sync with token based user id set in headers_
+  
+  `GET /submissions/1`
+  
+  ```
+  'Accept': 'application/json',
+  'X-Authorization': 'Bearer <token>'
+  ```
+
+* **Success Response:**
+
+  _List of all submissions_
+
+  * **Code:** 200 <br />
+    **Content:** `[{"sourceCode":"<source code>",...}, ...]`
+
+* **Sample Call:**
+
+  ```bash
+  curl --header "Content-Type: application/json" \
+       --header "X-Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ1c2VyMSIsInNjb3BlcyI6WyJST0xFX1VTRVIiXSwiaXNzIjoiamFsZ29hcmVuYS5jb20iLCJpYXQiOjE1MzI2ODUyMDUsImV4cCI6MTUzNTI3NzIwNX0.45Ilu0GnQyBVYprAcgtvPHmq5tdvbwiUZucSRAFDDPU2RYY-N8cDoM8k3gl1i2r4FPV7ECZaHgcc20fZwqj_CQ" \
+       http://localhost:5004/submissions/1
+  ```
+
+#### Find user submission by given submission id
+
+  _Given user token and submission id - find user submission_
+
+|URL|Method|
+|---|------|
+|_/submissions/find/:userId/:submissionId_|`GET`|
+
+* **Data Params**
+
+  _User id path parameter has to be in sync with token based user id set in headers_
+  
+  `GET /submissions/find/1/fib`
+  
+  ```
+  'Accept': 'application/json',
+  'X-Authorization': 'Bearer <token>'
+  ```
+
+* **Success Response:**
+
+  _List of all submissions_
+
+  * **Code:** 200 <br />
+    **Content:** `{"sourceCode":"<source code>",...}`
+
+* **Sample Call:**
+
+  ```bash
+  curl --header "Content-Type: application/json" \
+       --header "X-Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ1c2VyMSIsInNjb3BlcyI6WyJST0xFX1VTRVIiXSwiaXNzIjoiamFsZ29hcmVuYS5jb20iLCJpYXQiOjE1MzI2ODUyMDUsImV4cCI6MTUzNTI3NzIwNX0.45Ilu0GnQyBVYprAcgtvPHmq5tdvbwiUZucSRAFDDPU2RYY-N8cDoM8k3gl1i2r4FPV7ECZaHgcc20fZwqj_CQ" \
+       http://localhost:5004/submissions/find/1/fib
+  ```
+  
 ## Running locally
 
 There are two ways to run it - from sources or from binaries.

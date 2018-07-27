@@ -18,7 +18,7 @@ class SubmissionsController(
 ) {
 
     @GetMapping("/submissions/{userId}", produces = ["application/json"])
-    fun findUserSubmissions(
+    fun findAllUserSubmissions(
             @PathVariable userId: String,
             @RequestHeader("X-Authorization", required = false) token: String?
     ) = checkUser(token) { user ->
