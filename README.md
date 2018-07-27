@@ -22,27 +22,6 @@ JAlgoArena Submissions is service dedicated for collecting users submissions and
 | ---- | --------------- |
 | [GET /submissions/:userId] | Get all user submissions (only for logged in user) |
 
-## Components
-
-- [JAlgoArena](https://github.com/spolnik/JAlgoArena)
-- [JAlgoArena UI](https://github.com/spolnik/JAlgoArena-UI)
-- [JAlgoArena Auth Server](https://github.com/spolnik/JAlgoArena-Auth)
-- [JAlgoArena API Gateway](https://github.com/spolnik/JAlgoArena-API)
-
-## Continuous Delivery
-
-- initially, developer push his changes to GitHub
-- in next stage, GitHub notifies Travis CI about changes
-- Travis CI runs whole continuous integration flow, running compilation, tests and generating reports
-- coverage report is sent to Codecov
-
-## Infrastructure
-
-- Xodus (embedded highly scalable database) - http://jetbrains.github.io/xodus/
-- Spring Boot, Spring Cloud
-- TravisCI - https://travis-ci.org/spolnik/JAlgoArena-Submissions
-- Apache Kafka
-
 ## Running locally
 
 There are two ways to run it - from sources or from binaries.

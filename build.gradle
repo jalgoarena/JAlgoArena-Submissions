@@ -1,6 +1,5 @@
 buildscript {
     ext.fasterxml_version = '2.9.5'
-    ext.xodus_version = '1.2.3'
 }
 
 plugins {
