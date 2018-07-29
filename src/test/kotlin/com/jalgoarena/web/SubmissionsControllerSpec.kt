@@ -88,13 +88,13 @@ class SubmissionsControllerSpec {
                         "class Solution",
                         "ACCEPTED", userId,
                         "2",
-                        LocalDateTime.now().toString(),
+                        LocalDateTime.now(),
                         0.5,
                         10L,
                         null,
                         1,
                         0,
-                        null,
+                        "dummy_token",
                         id
                 )
     }

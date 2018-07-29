@@ -76,11 +76,6 @@ class SubmissionConsumer(
     private fun isValidUser(submission: Submission): Boolean {
         val token = submission.token
 
-        if (token == null) {
-            logger.warn("Token is empty!")
-            return false
-        }
-
         val user = usersClient.findUser(token)
 
         if (user == null) {

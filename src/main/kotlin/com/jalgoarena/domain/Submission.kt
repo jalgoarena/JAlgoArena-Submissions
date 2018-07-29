@@ -19,7 +19,7 @@ data class Submission(
         @Column(unique = true, nullable = false)
         var submissionId: String = "",
         @Column(nullable = false)
-        var submissionTime: String = LocalDateTime.now().toString(),
+        var submissionTime: LocalDateTime = LocalDateTime.now(),
         @Column(nullable = false)
         var elapsedTime: Double = -1.0,
         @Column(nullable = false)
@@ -27,7 +27,7 @@ data class Submission(
         var errorMessage: String? = null,
         var passedTestCases: Int? = 0,
         var failedTestCases: Int? = 0,
-        var token: String? = null,
+        var token: String = "",
         @Id @GeneratedValue(strategy = GenerationType.AUTO)
         var id: Int? = null
 )
