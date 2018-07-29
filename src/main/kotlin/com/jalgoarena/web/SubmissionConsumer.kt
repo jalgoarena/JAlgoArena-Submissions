@@ -1,6 +1,6 @@
 package com.jalgoarena.web
 
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.jalgoarena.data.SubmissionsRepository
 import com.jalgoarena.domain.Submission
 import com.jalgoarena.domain.UserSubmissionsEvent
@@ -15,7 +15,8 @@ import org.springframework.util.concurrent.ListenableFutureCallback
 @Service
 class SubmissionConsumer(
         @Autowired private val submissionsRepository: SubmissionsRepository,
-        @Autowired private val usersClient: UsersClient
+        @Autowired private val usersClient: UsersClient,
+        @Autowired private val objectMapper: ObjectMapper
 ) {
     private val logger = LoggerFactory.getLogger(this.javaClass)
 
@@ -70,7 +71,7 @@ class SubmissionConsumer(
     }
 
     private fun toSubmission(message: String): Submission {
-        return jacksonObjectMapper().readValue<Submission>(message, Submission::class.java)
+        return objectMapper.readValue<Submission>(message, Submission::class.java)
     }
 
     private fun isValidUser(submission: Submission): Boolean {
