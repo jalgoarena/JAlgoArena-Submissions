@@ -21,10 +21,10 @@ class SubmissionConsumer(
     private val logger = LoggerFactory.getLogger(this.javaClass)
 
     @Autowired
-    private lateinit var userSubmissionsEventPublisher: KafkaTemplate<Int, UserSubmissionsEvent>
+    private lateinit var userSubmissionsEventPublisher: KafkaTemplate<Int, String>
 
     @Autowired
-    private lateinit var submissionPublisher: KafkaTemplate<Int, Submission>
+    private lateinit var submissionPublisher: KafkaTemplate<Int, String>
 
     @KafkaListener(topics = ["submissions"])
     fun storeSubmission(message: String) {
@@ -44,14 +44,16 @@ class SubmissionConsumer(
                 )
 
                 val submissionsToJudgeFuture = submissionPublisher.send(
-                        "submissionsToJudge", savedSubmission
+                        "submissionsToJudge", objectMapper.writeValueAsString(savedSubmission)
                 )
                 submissionsToJudgeFuture.addCallback(SubmissionToJudgePublishHandler(
                         savedSubmission.submissionId, savedSubmission.id!!
                 ))
 
                 val future = userSubmissionsEventPublisher.send(
-                        "events", UserSubmissionsEvent(userId = submission.userId)
+                        "events", objectMapper.writeValueAsString(
+                        UserSubmissionsEvent(userId = submission.userId)
+                )
                 )
                 future.addCallback(SubmissionResultsConsumer.UserSubmissionsEventPublishHandler(
                         submission.submissionId, "new submission"
@@ -94,11 +96,11 @@ class SubmissionConsumer(
 
     class SubmissionToJudgePublishHandler(
             private val submissionId: String, private val id: Int
-    ) : ListenableFutureCallback<SendResult<Int, Submission>> {
+    ) : ListenableFutureCallback<SendResult<Int, String>> {
 
         private val logger = LoggerFactory.getLogger(this.javaClass)
 
-        override fun onSuccess(result: SendResult<Int, Submission>?) {
+        override fun onSuccess(result: SendResult<Int, String>?) {
             logger.info("Submission passed for judgement [submissionId={}, id={}]",
                     submissionId, id
             )

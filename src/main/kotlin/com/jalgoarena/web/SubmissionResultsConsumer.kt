@@ -22,10 +22,10 @@ class SubmissionResultsConsumer(
     private val logger = LoggerFactory.getLogger(this.javaClass)
 
     @Autowired
-    private lateinit var userSubmissionsEventPublisher: KafkaTemplate<Int, UserSubmissionsEvent>
+    private lateinit var userSubmissionsEventPublisher: KafkaTemplate<Int, String>
 
     @Autowired
-    private lateinit var rankingEventPublisher: KafkaTemplate<Int, RankingEvent>
+    private lateinit var rankingEventPublisher: KafkaTemplate<Int, String>
 
     @KafkaListener(topics = ["results"])
     fun storeSubmission(message: String) {
@@ -42,14 +42,18 @@ class SubmissionResultsConsumer(
                 logger.info("Submission result is saved [submissionId={}]", submission.submissionId)
 
                 val usersSubmissionsEventFuture = userSubmissionsEventPublisher.send(
-                        "events", UserSubmissionsEvent(userId = submission.userId)
+                    "events", objectMapper.writeValueAsString(
+                        UserSubmissionsEvent(userId = submission.userId)
+                    )
                 )
                 usersSubmissionsEventFuture.addCallback(
                         UserSubmissionsEventPublishHandler(submission.submissionId, "submission result")
                 )
 
                 val rankingEventFuture = rankingEventPublisher.send(
-                        "events", RankingEvent(problemId = submission.problemId)
+                    "events", objectMapper.writeValueAsString(
+                        RankingEvent(problemId = submission.problemId)
+                    )
                 )
                 rankingEventFuture.addCallback(RankingEventPublishHandler(submission.submissionId))
 
@@ -90,11 +94,11 @@ class SubmissionResultsConsumer(
 
     class UserSubmissionsEventPublishHandler(
             private val submissionId: String, private val submissionType: String
-    ) : ListenableFutureCallback<SendResult<Int, UserSubmissionsEvent>> {
+    ) : ListenableFutureCallback<SendResult<Int, String>> {
 
         private val logger = LoggerFactory.getLogger(this.javaClass)
 
-        override fun onSuccess(result: SendResult<Int, UserSubmissionsEvent>?) {
+        override fun onSuccess(result: SendResult<Int, String>?) {
             logger.info("Requested user submissions refresh for {} [submissionId={}]",
                     submissionType, submissionId)
         }
@@ -107,11 +111,11 @@ class SubmissionResultsConsumer(
 
     class RankingEventPublishHandler(
             private val submissionId: String
-    ) : ListenableFutureCallback<SendResult<Int, RankingEvent>> {
+    ) : ListenableFutureCallback<SendResult<Int, String>> {
 
         private val logger = LoggerFactory.getLogger(this.javaClass)
 
-        override fun onSuccess(result: SendResult<Int, RankingEvent>?) {
+        override fun onSuccess(result: SendResult<Int, String>?) {
             logger.info("Requested ranking refresh after new submission [submissionId={}]", submissionId)
         }
 

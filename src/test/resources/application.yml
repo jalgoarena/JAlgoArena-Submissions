@@ -10,7 +10,7 @@ spring:
     producer:
       retries: 3
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
-      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
   datasource:
     url: jdbc:h2:mem:test
   jpa:
