@@ -25,30 +25,39 @@ class SubmissionsStatsController(
     private fun buildStatsFrom(submissions: List<Submission>, users: List<User>): Map<String, SubmissionStats> {
         val stats = mutableMapOf<String, SubmissionStats>()
 
-        submissions.forEach { submission ->
-            val username = users.first { it.id == submission.userId }.username
+        submissions.stream()
+                .sorted { a, b -> a.submissionTime.compareTo(b.submissionTime) }
+                .forEach { submission ->
+                    val username = users.first { it.id == submission.userId }.username
 
-            if (!stats.containsKey(username)) {
-                stats[username] = SubmissionStats(
-                        username = username,
-                        submissions = mutableMapOf(),
-                        solved = mutableSetOf()
-                )
-            }
+                    if (!stats.containsKey(username)) {
+                        stats[username] = SubmissionStats(
+                                submissions = mutableMapOf(),
+                                solvedProblemsPerDay = mutableMapOf(),
+                                solved = mutableSetOf()
+                        )
+                    }
 
-            appendSubmissions(submission, stats[username]!!)
-            appendProblem(submission, stats[username]!!)
-        }
+                    appendSubmissions(submission, stats[username]!!)
+                    appendSolvedProblemsInTime(submission, stats[username]!!)
+                }
 
         return stats
     }
 
-    private fun appendProblem(submission: Submission, userStats: SubmissionStats) {
-        if (submission.statusCode != "ACCEPTED") {
+    private fun appendSolvedProblemsInTime(submission: Submission, userStats: SubmissionStats) {
+        if (submission.statusCode != "ACCEPTED" || userStats.solved.contains(submission.problemId)) {
             return
         }
 
         userStats.solved.add(submission.problemId)
+        val date = extractDate(submission)
+
+        if (userStats.solvedProblemsPerDay.containsKey(date) && userStats.solved.contains(submission.problemId)) {
+            userStats.solvedProblemsPerDay[date]!!.add(submission.problemId)
+        } else {
+            userStats.solvedProblemsPerDay[date] = mutableSetOf(submission.problemId)
+        }
     }
 
     private fun appendSubmissions(submission: Submission, userStats: SubmissionStats) {
