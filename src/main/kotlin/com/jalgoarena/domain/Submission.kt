@@ -24,6 +24,7 @@ data class Submission(
         var elapsedTime: Double = -1.0,
         @Column(nullable = false)
         var consumedMemory: Long = 0L,
+        @Column(length = 20000)
         var errorMessage: String? = null,
         var passedTestCases: Int? = 0,
         var failedTestCases: Int? = 0,
