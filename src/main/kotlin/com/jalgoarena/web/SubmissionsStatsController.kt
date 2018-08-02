@@ -27,22 +27,26 @@ class SubmissionsStatsController(
 
         submissions.stream()
                 .sorted { a, b -> a.submissionTime.compareTo(b.submissionTime) }
-                .forEach { submission ->
-                    val username = users.first { it.id == submission.userId }.username
-
-                    if (!stats.containsKey(username)) {
-                        stats[username] = SubmissionStats(
-                                submissions = mutableMapOf(),
-                                solvedProblemsPerDay = mutableMapOf(),
-                                solved = mutableSetOf()
-                        )
-                    }
-
-                    appendSubmissions(submission, stats[username]!!)
-                    appendSolvedProblemsInTime(submission, stats[username]!!)
-                }
+                .forEach { buildUserStats(users, it, stats) }
 
         return stats
+    }
+
+    private fun buildUserStats(
+            users: List<User>, submission: Submission, stats: MutableMap<String, SubmissionStats>
+    ) {
+        val username = users.first { it.id == submission.userId }.username
+
+        if (!stats.containsKey(username)) {
+            stats[username] = SubmissionStats(
+                    submissions = mutableMapOf(),
+                    solvedProblemsPerDay = mutableMapOf(),
+                    solved = mutableSetOf()
+            )
+        }
+
+        appendSubmissions(submission, stats[username]!!)
+        appendSolvedProblemsInTime(submission, stats[username]!!)
     }
 
     private fun appendSolvedProblemsInTime(submission: Submission, userStats: SubmissionStats) {
