@@ -30,6 +30,7 @@ class SubmissionsController(
         }
     }
 
+    @Suppress("NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
     @GetMapping("/submissions/find/{userId}/{submissionId}", produces = ["application/json"])
     fun findUserSubmissionBySubmissionId(
             @PathVariable userId: String,
@@ -39,7 +40,8 @@ class SubmissionsController(
         when {
             user.id != userId -> unauthorized()
             else -> {
-                ok(submissionsRepository.findBySubmissionId(submissionId))
+                val submission = submissionsRepository.findBySubmissionId(submissionId)
+                ok(submission)
             }
         }
     }

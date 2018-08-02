@@ -5,6 +5,6 @@ import org.springframework.data.jpa.repository.JpaRepository
 
 interface SubmissionsRepository : JpaRepository<Submission, Int> {
     fun findByUserId(userId: String): List<Submission>
-    fun findBySubmissionId(submissionId: String): Submission
+    fun findBySubmissionId(submissionId: String): Submission?
 }
 
