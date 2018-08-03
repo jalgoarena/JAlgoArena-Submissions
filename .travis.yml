@@ -27,5 +27,9 @@ deploy:
     file_glob: true
     file: "./build/libs/JAlgoArena-Submissions-*.zip"
     skip_cleanup: true
+    on:
+      tags: false
   - provider: script
     script: bash docker_push
+    on:
+      tags: false
