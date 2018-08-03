@@ -4,7 +4,10 @@ import com.jalgoarena.data.SubmissionsRepository
 import com.jalgoarena.domain.Submission
 import com.jalgoarena.domain.SubmissionStats
 import com.jalgoarena.domain.User
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.dao.InvalidDataAccessResourceUsageException
+import org.springframework.transaction.TransactionException
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RestController
 import java.time.format.DateTimeFormatter
@@ -15,11 +18,21 @@ class SubmissionsStatsController(
         @Autowired private val submissionsRepository: SubmissionsRepository
 ) {
 
+    private val logger = LoggerFactory.getLogger(this.javaClass)
+
     @GetMapping("/submissions/stats", produces = ["application/json"])
     fun submissionsStats(): Map<String, SubmissionStats> {
-        val submissions = submissionsRepository.findAll()
-        val users = usersClient.findAllUsers()
-        return buildStatsFrom(submissions, users)
+        return try {
+            val submissions = submissionsRepository.findAll()
+            val users = usersClient.findAllUsers()
+            buildStatsFrom(submissions, users)
+        } catch (e: TransactionException) {
+            logger.error("Cannot connect to database", e)
+            mapOf()
+        } catch (e: InvalidDataAccessResourceUsageException) {
+            logger.error("Wrong database schema", e)
+            mapOf()
+        }
     }
 
     private fun buildStatsFrom(submissions: List<Submission>, users: List<User>): Map<String, SubmissionStats> {
