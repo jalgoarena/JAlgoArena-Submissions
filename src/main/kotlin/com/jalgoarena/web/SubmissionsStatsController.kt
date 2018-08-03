@@ -21,18 +21,16 @@ class SubmissionsStatsController(
     private val logger = LoggerFactory.getLogger(this.javaClass)
 
     @GetMapping("/submissions/stats", produces = ["application/json"])
-    fun submissionsStats(): Map<String, SubmissionStats> {
-        return try {
-            val submissions = submissionsRepository.findAll()
-            val users = usersClient.findAllUsers()
-            buildStatsFrom(submissions, users)
-        } catch (e: TransactionException) {
-            logger.error("Cannot connect to database", e)
-            mapOf()
-        } catch (e: InvalidDataAccessResourceUsageException) {
-            logger.error("Wrong database schema", e)
-            mapOf()
-        }
+    fun submissionsStats(): Map<String, SubmissionStats> = try {
+        val submissions = submissionsRepository.findAll()
+        val users = usersClient.findAllUsers()
+        buildStatsFrom(submissions, users)
+    } catch (e: TransactionException) {
+        logger.error("Cannot connect to database", e)
+        mapOf()
+    } catch (e: InvalidDataAccessResourceUsageException) {
+        logger.error("Wrong database schema", e)
+        mapOf()
     }
 
     private fun buildStatsFrom(submissions: List<Submission>, users: List<User>): Map<String, SubmissionStats> {
