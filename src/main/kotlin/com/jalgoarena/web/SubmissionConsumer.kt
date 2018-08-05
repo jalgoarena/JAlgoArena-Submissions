@@ -52,7 +52,11 @@ class SubmissionConsumer(
 
                 val future = userSubmissionsEventPublisher.send(
                         "events", objectMapper.writeValueAsString(
-                        UserSubmissionsEvent(userId = submission.userId)
+                        UserSubmissionsEvent(
+                                userId = submission.userId,
+                                problemId = submission.problemId,
+                                submissionId = submission.submissionId
+                        )
                 )
                 )
                 future.addCallback(SubmissionResultsConsumer.UserSubmissionsEventPublishHandler(

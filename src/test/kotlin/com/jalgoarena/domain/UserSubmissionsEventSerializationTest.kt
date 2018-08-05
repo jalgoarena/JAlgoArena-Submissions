@@ -31,12 +31,16 @@ class UserSubmissionsEventSerializationTest {
 
     companion object {
         private val EVENT = UserSubmissionsEvent(
-                userId = "0-0"
+                userId = "0-0",
+                problemId = "0-1",
+                submissionId = "0-2"
         )
 
         @Language("JSON")
         private val EVENT_JSON = """{
   "userId": "0-0",
+  "problemId": "0-1",
+  "submissionId": "0-2",
   "type": "refreshUserSubmissions"
 }
 """
