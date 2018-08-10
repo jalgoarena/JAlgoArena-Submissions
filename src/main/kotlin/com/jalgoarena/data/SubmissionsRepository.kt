@@ -9,5 +9,6 @@ interface SubmissionsRepository : JpaRepository<Submission, Int> {
     fun findBySubmissionId(submissionId: String): Submission?
     fun findByProblemId(problemId: String): List<Submission>
     fun findBySubmissionTimeLessThan(tillDate: LocalDateTime): List<Submission>
+    fun findAllByIdGreaterThan(id: Int): List<Submission>
 }
 

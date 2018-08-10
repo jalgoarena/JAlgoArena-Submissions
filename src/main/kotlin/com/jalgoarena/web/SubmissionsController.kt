@@ -27,47 +27,38 @@ class SubmissionsController(
     private val logger = LoggerFactory.getLogger(this.javaClass)
 
     @GetMapping("/submissions", produces = ["application/json"])
-    fun findAll(): List<RankingSubmission> = try {
+    fun findAll(): List<RankingSubmission> = handleExceptions(returnOnException = listOf()) {
         submissionsRepository.findAll().map {
             RankingSubmission(it.id!!, it.problemId, it.statusCode, it.userId, it.submissionTime, it.elapsedTime)
         }
-    } catch (e: TransactionException) {
-        logger.error("Cannot connect to database", e)
-        listOf()
-    } catch (e: InvalidDataAccessResourceUsageException) {
-        logger.error("Wrong database schema", e)
-        listOf()
+    }
+
+    @GetMapping("/submissions/after/{id}", produces = ["application/json"])
+    fun findAllAfter(
+            @PathVariable id: Int
+    ): List<RankingSubmission> = handleExceptions(returnOnException = listOf()) {
+        submissionsRepository.findAllByIdGreaterThan(id).map {
+            RankingSubmission(it.id!!, it.problemId, it.statusCode, it.userId, it.submissionTime, it.elapsedTime)
+        }
     }
 
     @GetMapping("/submissions/problem/{problemId}", produces = ["application/json"])
     fun findAllForProblem(
             @PathVariable problemId: String
-    ): List<RankingSubmission> = try {
+    ): List<RankingSubmission> = handleExceptions(returnOnException = listOf()) {
         submissionsRepository.findByProblemId(problemId).map {
             RankingSubmission(it.id!!, it.problemId, it.statusCode, it.userId, it.submissionTime, it.elapsedTime)
         }
-    } catch (e: TransactionException) {
-        logger.error("Cannot connect to database", e)
-        listOf()
-    } catch (e: InvalidDataAccessResourceUsageException) {
-        logger.error("Wrong database schema", e)
-        listOf()
     }
 
     @GetMapping("/submissions/date/{date}", produces = ["application/json"])
     fun findAllForDate(
             @PathVariable date: String
-    ): List<RankingSubmission> = try {
+    ): List<RankingSubmission> = handleExceptions(returnOnException = listOf()) {
         val tillDate = LocalDate.parse(date, YYYY_MM_DD).plusDays(1).atStartOfDay()
         submissionsRepository.findBySubmissionTimeLessThan(tillDate).map {
             RankingSubmission(it.id!!, it.problemId, it.statusCode, it.userId, it.submissionTime, it.elapsedTime)
         }
-    } catch (e: TransactionException) {
-        logger.error("Cannot connect to database", e)
-        listOf()
-    } catch (e: InvalidDataAccessResourceUsageException) {
-        logger.error("Wrong database schema", e)
-        listOf()
     }
 
     @GetMapping("/submissions/{userId}", produces = ["application/json"])
@@ -97,6 +88,16 @@ class SubmissionsController(
                 ok(submission)
             }
         }
+    }
+
+    private fun <T> handleExceptions(returnOnException: T, body: () -> T) = try {
+        body()
+    } catch (e: TransactionException) {
+        logger.error("Cannot connect to database", e)
+        returnOnException
+    } catch (e: InvalidDataAccessResourceUsageException) {
+        logger.error("Wrong database schema", e)
+        returnOnException
     }
 
     private fun <T> checkUser(token: String?, action: (User) -> ResponseEntity<T>): ResponseEntity<T> {
