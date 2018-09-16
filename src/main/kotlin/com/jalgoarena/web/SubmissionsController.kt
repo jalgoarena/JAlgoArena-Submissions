@@ -2,7 +2,6 @@ package com.jalgoarena.web
 
 import com.jalgoarena.data.SubmissionsRepository
 import com.jalgoarena.domain.RankingSubmission
-import com.jalgoarena.domain.Submission
 import com.jalgoarena.domain.User
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
@@ -27,34 +26,33 @@ class SubmissionsController(
     private val logger = LoggerFactory.getLogger(this.javaClass)
 
     @GetMapping("/submissions", produces = ["application/json"])
-    fun findAll(): List<RankingSubmission> = handleExceptions(returnOnException = listOf()) {
+    fun findAll() = handleExceptions(returnOnException = listOf()) {
         submissionsRepository.findAll().map {
             RankingSubmission(it.id!!, it.problemId, it.statusCode, it.userId, it.submissionTime, it.elapsedTime)
         }
     }
 
+    @GetMapping("/submissions/count", produces = ["application/json"])
+    fun submissionsCount() = handleExceptions(returnOnException = 0L) {
+        submissionsRepository.count()
+    }
+
     @GetMapping("/submissions/after/{id}", produces = ["application/json"])
-    fun findAllAfter(
-            @PathVariable id: Int
-    ): List<RankingSubmission> = handleExceptions(returnOnException = listOf()) {
+    fun findAllAfter(@PathVariable id: Int) = handleExceptions(returnOnException = listOf()) {
         submissionsRepository.findAllByIdGreaterThan(id).map {
             RankingSubmission(it.id!!, it.problemId, it.statusCode, it.userId, it.submissionTime, it.elapsedTime)
         }
     }
 
     @GetMapping("/submissions/problem/{problemId}", produces = ["application/json"])
-    fun findAllForProblem(
-            @PathVariable problemId: String
-    ): List<RankingSubmission> = handleExceptions(returnOnException = listOf()) {
+    fun findAllForProblem(@PathVariable problemId: String) = handleExceptions(returnOnException = listOf()) {
         submissionsRepository.findByProblemId(problemId).map {
             RankingSubmission(it.id!!, it.problemId, it.statusCode, it.userId, it.submissionTime, it.elapsedTime)
         }
     }
 
     @GetMapping("/submissions/date/{date}", produces = ["application/json"])
-    fun findAllForDate(
-            @PathVariable date: String
-    ): List<RankingSubmission> = handleExceptions(returnOnException = listOf()) {
+    fun findAllForDate(@PathVariable date: String) = handleExceptions(returnOnException = listOf()) {
         val tillDate = LocalDate.parse(date, YYYY_MM_DD).plusDays(1).atStartOfDay()
         submissionsRepository.findBySubmissionTimeLessThan(tillDate).map {
             RankingSubmission(it.id!!, it.problemId, it.statusCode, it.userId, it.submissionTime, it.elapsedTime)
